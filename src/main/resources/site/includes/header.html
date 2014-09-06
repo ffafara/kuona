@@ -1,0 +1,14 @@
+<div id="logo-group">
+				<span data-ng-controller="ActivityDemoCtrl">
+					<activity data-onrefresh="refreshCallback">
+                        <activity:button data-icon="fa fa-user" data-total="total"/>
+                        <activity:content data-footer="footerContent">
+                            <activity:item data-src="item.src" data-onload="item.onload" data-active="item.active"
+                                           data-ng-repeat="item in items">
+                                <span data-localize="{{ item.title }}">{{ item.title }}</span> ({{ item.count }})
+                            </activity:item>
+                        </activity:content>
+                    </activity>
+				</span>
+</div>
+
