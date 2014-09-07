@@ -279,4 +279,7 @@ public class JenkinsHttpClient {
         httpRequestBase.releaseConnection();
     }
 
+    public URI getURI() {
+        return uri;
+    }
 }

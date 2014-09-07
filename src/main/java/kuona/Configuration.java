@@ -1,4 +1,4 @@
-package ddg;
+package kuona;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,5 +58,9 @@ public class Configuration {
         }
 
         return result;
+    }
+
+    public String getSitePath() {
+        return (String) data.get("site-path");
     }
 }

@@ -1,4 +1,4 @@
-package ddg;
+package kuona;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.Job;
-import ddg.generator.Site;
-import ddg.generator.SiteGenerator;
+import kuona.generator.Site;
+import kuona.generator.SiteGenerator;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupDir;
@@ -18,9 +18,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static kuona.utils.Utils.puts;
 
 public class Application {
+
+    public static final String VERSION = "0.0.1";
+
     public void run(String[] args) {
         if (args.length < 1) {
             if (configExists()) {
@@ -79,40 +90,9 @@ public class Application {
     }
 
     private void updateSite() {
-        try {
-            Configuration config = Configuration.read(new FileInputStream("config.yml"));
+        SiteUpdate update = new SiteUpdate();
 
-            for (JenkinsServer jenkins : config.servers()) {
-
-                Map<String, Job> jobs = jenkins.getJobs();
-
-                for (String key : jobs.keySet()) {
-                    final Job job = jobs.get(key);
-
-//                    prettifyJson(job.detailsJson());
-
-                    final List<Build> builds = job.details().getBuilds();
-
-                    for (Build buildDetails : builds) {
-                        prettifyJson(buildDetails.detailsJson());
-
-//                        final BuildWithDetails details = buildDetails.details();
-
-//                        final Map<String, String> parameters = details.getParameters();
-//                        final List actions = details.getActions();
-//
-//                        STGroup g = new STRawGroupDir("templates/project/");
-//
-//                        ST st = g.getInstanceOf("build.json");
-//                        st.add("build", details);
-//
-//                        System.out.println(st.render());
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        update.update();
     }
 
     private boolean configExists() {
@@ -121,16 +101,17 @@ public class Application {
 
     private void createSite(List<String> arguments) {
 
-        SiteGenerator generator = new SiteGenerator(new Site());
+        SiteGenerator generator = new SiteGenerator(new Site(true));
 
         generator.generate("site", arguments.get(0));
     }
 
     private void usage() {
-        puts("Usage:\n" +
-                "ddg <command> [command-args]\n" +
+        puts("kuona version " + VERSION + "\n" +
+                "Usage:\n" +
+                "kuona <command> [command-args]\n" +
                 "\n" +
-                "ddg run in a project folder without any parameters updates the project data by reading from the configured CI systems.\n" +
+                "kuona run in a project folder without any parameters updates the project data by reading from the configured CI systems.\n" +
                 "\n" +
                 "Commands:\n" +
                 "\n" +
@@ -139,9 +120,6 @@ public class Application {
                 "\n");
     }
 
-    public static void puts(String message) {
-        System.out.println(message);
-    }
 
     private static void testOne() {
         try {

@@ -1,4 +1,4 @@
-package ddg;
+package kuona;
 
 import com.offbytwo.jenkins.JenkinsServer;
 import org.apache.commons.io.IOUtils;

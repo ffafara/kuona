@@ -1,4 +1,4 @@
-package ddg.generator;
+package kuona.generator;
 
 import org.junit.Test;
 

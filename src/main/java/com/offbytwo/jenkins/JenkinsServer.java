@@ -9,7 +9,10 @@ package com.offbytwo.jenkins;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.offbytwo.jenkins.client.JenkinsHttpClient;
-import com.offbytwo.jenkins.model.*;
+import com.offbytwo.jenkins.model.Computer;
+import com.offbytwo.jenkins.model.Job;
+import com.offbytwo.jenkins.model.JobWithDetails;
+import com.offbytwo.jenkins.model.MainView;
 import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
@@ -34,6 +37,7 @@ public class JenkinsServer {
         this(new JenkinsHttpClient(serverUri));
     }
 
+
     /**
      * Create a new Jenkins server reference given the address and credentials
      *
@@ -43,6 +47,10 @@ public class JenkinsServer {
      */
     public JenkinsServer(URI serverUri, String username, String passwordOrToken) {
         this(new JenkinsHttpClient(serverUri, username, passwordOrToken));
+    }
+
+    public URI getURI() {
+       return client.getURI();
     }
 
     /**
@@ -65,6 +73,14 @@ public class JenkinsServer {
             return true;
         } catch (IOException e) {
             return false;
+        }
+    }
+
+    public MainView getServerInfo() {
+        try {
+            return client.get("/", MainView.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

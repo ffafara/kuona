@@ -1,4 +1,4 @@
-package ddg.utils;
+package kuona.utils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

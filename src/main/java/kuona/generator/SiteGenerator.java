@@ -1,4 +1,4 @@
-package ddg.generator;
+package kuona.generator;
 
 import java.io.BufferedReader;
 import java.io.File;
