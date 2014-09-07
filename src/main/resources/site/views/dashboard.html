@@ -5,7 +5,7 @@
     <div class="col-xs-12 col-sm-5 col-md-5 col-lg-8">
         <ul id="sparks" class="">
             <li class="sparks-info">
-                <h5>CI Servers <span class="txt-color-blue">3</span></h5>
+                <h5>CI Servers <span class="txt-color-blue">{{ dashboard.servers.length }}</span></h5>
 
                 <div class="sparkline txt-color-blue hidden-mobile hidden-md hidden-sm">
                     100, 50, 10
@@ -468,7 +468,7 @@ var pagefunction = function () {
                 var d = [];
                 toggles.find(':checkbox').each(function () {
                     if ($(this).is(':checked')) {
-                        d.push(data[$(this).attr("name").substr(4, 1)]);
+                        d.push(data[$(this).attr("name").bstr(4, 1)]);
                     }
                 });
                 if (d.length > 0) {
@@ -710,7 +710,7 @@ var pagefunction = function () {
     $.chat_users_container = $('#chat-container > .chat-list-body')
     $.chat_users = $('#chat-users')
     $.chat_list_btn = $('#chat-container > .chat-list-open-close');
-    $.chat_body = $('#chat-body');
+//    $.chat_body = $('#chat-body');
 
     /*
      * LIST FILTER (CHAT)
@@ -751,9 +751,9 @@ var pagefunction = function () {
         $(this).parent('#chat-container').toggleClass('open');
     })
 
-    $.chat_body.animate({
-        scrollTop: $.chat_body[0].scrollHeight
-    }, 500);
+//    $.chat_body.animate({
+//        scrollTop: $.chat_body[0].scrollHeight
+//    }, 500);
 
 };
 

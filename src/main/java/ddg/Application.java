@@ -1,8 +1,11 @@
 package ddg;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
-import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.Job;
 import ddg.generator.Site;
 import ddg.generator.SiteGenerator;
@@ -13,9 +16,9 @@ import org.stringtemplate.v4.STRawGroupDir;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.*;
 
 public class Application {
     public void run(String[] args) {
@@ -26,21 +29,56 @@ public class Application {
                 usage();
             }
         } else {
-            List<String> arguments = Arrays.asList(args);
+            List<String> arguments = new ArrayList<>(Arrays.asList(args));
 
             arguments.remove(0);
+
             switch (args[0].toLowerCase()) {
                 case "create":
                     createSite(arguments);
                     break;
+                default:
+                    System.err.println("Unrecognised command " + args[0] + "\n");
+                    usage();
+                    break;
             }
         }
+    }
+
+    private HashMap<String, Object> jsonToMap(String data) {
+        try {
+            ObjectMapper mapper = new ObjectMapper(new JsonFactory());
+
+            TypeReference<HashMap<String, Object>> typeRef
+                    = new TypeReference<HashMap<String, Object>>() {
+            };
+
+            return mapper.readValue(data, typeRef);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
+    private void writeJson(Object o, Writer output) {
+        try {
+            ObjectMapper mapper = new ObjectMapper(new JsonFactory());
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            mapper.writeValue(output, o);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void prettifyJson(String data) {
+        puts("\n\n********************************************************************************************************************************************\n");
+        HashMap<String, Object> o = jsonToMap(data);
+        StringWriter sw = new StringWriter();
+        writeJson(o, sw);
+        puts(sw.toString());
     }
 
     private void updateSite() {
-
         try {
             Configuration config = Configuration.read(new FileInputStream("config.yml"));
 
@@ -50,22 +88,25 @@ public class Application {
 
                 for (String key : jobs.keySet()) {
                     final Job job = jobs.get(key);
-                    System.out.println(job.details().getDisplayName());
+
+//                    prettifyJson(job.detailsJson());
+
                     final List<Build> builds = job.details().getBuilds();
 
-                    for (Build build : builds) {
-                        final BuildWithDetails details = build.details();
+                    for (Build buildDetails : builds) {
+                        prettifyJson(buildDetails.detailsJson());
 
-                        ST template = new ST("Build <build.Number> " +
-                                "took: <build.Duration> " +
-                                "Status: <build.Result>");
+//                        final BuildWithDetails details = buildDetails.details();
 
-                        template.add("build", details);
-
-                        puts(template.render());
-
-//                    System.out.println("Build " + build.getNumber() + " took " + details.getDuration() + " result " + details.getResult().name());
-
+//                        final Map<String, String> parameters = details.getParameters();
+//                        final List actions = details.getActions();
+//
+//                        STGroup g = new STRawGroupDir("templates/project/");
+//
+//                        ST st = g.getInstanceOf("build.json");
+//                        st.add("build", details);
+//
+//                        System.out.println(st.render());
                     }
                 }
             }
@@ -86,10 +127,10 @@ public class Application {
     }
 
     private void usage() {
-        puts("Usage:" +
+        puts("Usage:\n" +
                 "ddg <command> [command-args]\n" +
                 "\n" +
-                "ddg run in a project folder without any parameters updates the project data by reading from the configured CI systems." +
+                "ddg run in a project folder without any parameters updates the project data by reading from the configured CI systems.\n" +
                 "\n" +
                 "Commands:\n" +
                 "\n" +

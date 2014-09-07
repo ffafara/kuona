@@ -7,9 +7,11 @@ import com.offbytwo.jenkins.JenkinsServer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Configuration {
     private final HashMap<String, Object> data;
@@ -40,9 +42,21 @@ public class Configuration {
     }
 
     public List<JenkinsServer> servers() {
-//        JenkinsServer jenkins = new JenkinsServer(new URI(args[0]), args[1], args[2]);
-//
-//
-        return new ArrayList<>();
+        final ArrayList<JenkinsServer> result = new ArrayList<>();
+        final ArrayList<Map<String, String>> servers = (ArrayList<Map<String, String>>) data.get("servers");
+
+        for (Map<String, String> m : servers) {
+            try {
+                String url = m.get("url");
+                String username = m.get("username");
+                String password = m.get("password");
+
+                result.add(new JenkinsServer(new URI(url), username, password));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return result;
     }
 }
