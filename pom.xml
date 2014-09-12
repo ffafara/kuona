@@ -36,6 +36,13 @@
             <systemPath>${project.basedir}/lib/ST-4.0.8.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>4.0.8</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/antlr-runtime-4.4.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.3.2</version>

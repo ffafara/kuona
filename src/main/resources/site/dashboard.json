@@ -1,0 +1,9 @@
+{
+    "version": "0.0.1",
+    "servers": [
+        {
+            "name": "Server descriptive name",
+            "url": "http://example.com"
+        }
+    ]
+}

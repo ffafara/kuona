@@ -24,7 +24,6 @@
 </div>
 <div class="show-stat-microcharts">
     <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-
         <div class="easy-pie-chart txt-color-orangeDark" data-percent="{{dashboard.trend.delta}}" data-pie-size="50">
             <span class="percent percent-sign">{{dashboard.trend.delta}}</span>
         </div>
@@ -820,7 +819,7 @@ var pagefunction = function () {
     // open chat list
     $.chat_list_btn.click(function () {
         $(this).parent('#chat-container').toggleClass('open');
-    })
+    });
 
 //    $.chat_body.animate({
 //        scrollTop: $.chat_body[0].scrollHeight

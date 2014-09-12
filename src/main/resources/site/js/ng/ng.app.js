@@ -59,3 +59,4 @@ smartApp.config(['$routeProvider', '$provide', function($routeProvider, $provide
 smartApp.run(['$rootScope', 'settings', function($rootScope, settings) {
 	settings.currentLang = settings.languages[0]; // en
 }]);
+

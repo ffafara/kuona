@@ -1753,4 +1753,6 @@ $('body').on('click', function(e) {
 			$(this).popover('hide');
 		}
 	});
-}); 
+});
+
+

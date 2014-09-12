@@ -172,5 +172,4 @@ angular.module('app.demoControllers', [])
         $scope.serverCount = 300;
         $scope.dashboard = {};
 
-    }])
-;
+    }]);
