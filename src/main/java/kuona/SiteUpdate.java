@@ -32,7 +32,8 @@ public class SiteUpdate {
                 puts("Updating " + jenkins.getURI());
                 dashboardServers.add(new HashMap<String, String>() {
                     {
-                        put("name", jenkins.getServerInfo().getDescription());
+                        put("name", jenkins.getServerInfo().getName());
+                        put("description", jenkins.getServerInfo().getDescription());
                         put("uri", jenkins.getURI().toString());
                     }
                 });

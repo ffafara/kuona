@@ -126,5 +126,7 @@ public class LogParserTests {
         LogParser parser = new LogParser(revisions::add);
 
         parser.parse(new ByteArrayInputStream(logData.getBytes()));
+
+        assertThat(revisions.size(), is(2));
     }
 }

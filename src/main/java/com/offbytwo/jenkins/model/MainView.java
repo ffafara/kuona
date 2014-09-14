@@ -12,16 +12,17 @@ import java.util.List;
 
 public class MainView extends BaseModel {
     private List<Job> jobs;
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     private String description;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    private String name;
 
     /* default constructor needed for Jackson */
     public MainView() {
@@ -36,6 +37,13 @@ public class MainView extends BaseModel {
         this(Arrays.asList(jobs));
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public List<Job> getJobs() {
         return jobs;
