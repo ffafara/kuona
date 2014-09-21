@@ -1,22 +1,22 @@
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark"><i class="fa-fw fa fa-home"></i> Delivery Dashboard <small>{{ dashboard.lastUpdated }}</small></h1>
+        <h1 class="page-title txt-color-blueDark"><i class="fa-fw fa fa-home"></i> Delivery Dashboard <small>$dashboard.lastUpdated$</small></h1>
     </div>
     <div class="col-xs-12 col-sm-5 col-md-5 col-lg-8">
         <ul id="sparks" class="">
             <li class="sparks-info">
-                <h5>CI Servers <span class="txt-color-blue">{{ dashboard.servers.length }}</span></h5>
+                <h5>CI Servers <span class="txt-color-blue"> $dashboard.server.count$</span></h5>
 
                 <div class="sparkline txt-color-blue hidden-mobile hidden-md hidden-sm">
-                    {{ dashboard.sparklines.activity }}
+                    $dashboard.sparklines.activity$
                 </div>
             </li>
             <li class="sparks-info">
                 <h5> Yesterday's builds <span class="txt-color-purple"><i
-                        class="fa fa-arrow-circle-{{dashboard.trend.trend}}"></i>&nbsp;{{dashboard.trend.delta}}%</span></h5>
+                        class="fa fa-arrow-circle-{{dashboard.trend.trend}}"></i>&nbsp;$dashboard.trend.delta$%</span></h5>
 
                 <div class="sparkline txt-color-purple hidden-mobile hidden-md hidden-sm">
-                    {{ dashboard.sparklines.activity }}
+                    $dashboard.sparklines.activity$
                 </div>
             </li>
         </ul>
@@ -99,13 +99,13 @@
  * pageSetUp(); WILL CALL THE FOLLOWING FUNCTIONS
  *
  * // activate tooltips
- * $("[rel=tooltip]").tooltip();
+ * \$("[rel=tooltip]").tooltip();
  *
  * // activate popovers
- * $("[rel=popover]").popover();
+ * \$("[rel=popover]").popover();
  *
  * // activate popovers with hover states
- * $("[rel=popover-hover]").popover({ trigger: "hover" });
+ * \$("[rel=popover-hover]").popover({ trigger: "hover" });
  *
  * // activate inline charts
  * runAllCharts();
@@ -134,12 +134,13 @@ pageSetUp();
 
 var pagefunction = function () {
 
-    $(".js-status-update a").click(function () {
-        var selText = $(this).text();
-        var $this = $(this);
-        $this.parents('.btn-group').find('.dropdown-toggle').html(selText + ' <span class="caret"></span>');
-        $this.parents('.dropdown-menu').find('li').removeClass('active');
-        $this.parent().addClass('active');
+    \$(".js-status-update a").click(function () {
+    \$(".js-status-update a").click(function () {
+        var selText = \$(this).text();
+        var \$this = \$(this);
+        \$this.parents('.btn-group').find('.dropdown-toggle').html(selText + ' <span class="caret"></span>');
+        \$this.parents('.dropdown-menu').find('li').removeClass('active');
+        \$this.parent().addClass('active');
     });
 
     /*
@@ -148,7 +149,7 @@ var pagefunction = function () {
 
     // initialize sortable
 
-    $("#sortable1, #sortable2").sortable({
+    \$("#sortable1, #sortable2").sortable({
         handle: '.handle',
         connectWith: ".todo",
         update: countTasks
@@ -156,20 +157,20 @@ var pagefunction = function () {
 
 
     // check and uncheck
-    $('.todo .checkbox > input[type="checkbox"]').click(function () {
-        var $this = $(this).parent().parent().parent();
+    \$('.todo .checkbox > input[type="checkbox"]').click(function () {
+        var \$this = \$(this).parent().parent().parent();
 
-        if ($(this).prop('checked')) {
-            $this.addClass("complete");
+        if (\$(this).prop('checked')) {
+            \$this.addClass("complete");
 
             // remove this if you want to undo a check list once checked
-            //$(this).attr("disabled", true);
-            $(this).parent().hide();
+            //\$(this).attr("disabled", true);
+            \$(this).parent().hide();
 
             // once clicked - add class, copy to memory then remove and add to sortable3
-            $this.slideUp(500, function () {
-                $this.clone().prependTo("#sortable3").effect("highlight", {}, 800);
-                $this.remove();
+            \$this.slideUp(500, function () {
+                \$this.clone().prependTo("#sortable3").effect("highlight", {}, 800);
+                \$this.remove();
                 countTasks();
             });
         } else {
@@ -180,9 +181,9 @@ var pagefunction = function () {
     // count tasks
     function countTasks() {
 
-        $('.todo-group-title').each(function () {
-            var $this = $(this);
-            $this.find(".num-of-tasks").text($this.next().find("li").size());
+        \$('.todo-group-title').each(function () {
+            var \$this = \$(this);
+            \$this.find(".num-of-tasks").text(\$this.next().find("li").size());
         });
 
     }
@@ -209,7 +210,7 @@ var pagefunction = function () {
 
         var data = [],
                 totalPoints = 200,
-                $UpdatingChartColors = $("#updating-chart").css('color');
+                \$UpdatingChartColors = \$("#updating-chart").css('color');
 
         function getRandomData() {
             if (data.length > 0)
@@ -235,12 +236,12 @@ var pagefunction = function () {
 
         // setup control widget
         var updateInterval = 1500;
-        $("#updating-chart").val(updateInterval).change(function () {
+        \$("#updating-chart").val(updateInterval).change(function () {
 
-            var v = $(this).val();
+            var v = \$(this).val();
             if (v && !isNaN(+v)) {
                 updateInterval = +v;
-                $(this).val("" + updateInterval);
+                \$(this).val("" + updateInterval);
             }
 
         });
@@ -255,7 +256,7 @@ var pagefunction = function () {
                 min: 0,
                 max: 100
             },
-            colors: [$UpdatingChartColors],
+            colors: [\$UpdatingChartColors],
             series: {
                 lines: {
                     lineWidth: 1,
@@ -276,22 +277,22 @@ var pagefunction = function () {
             }
         };
 
-        var plot = $.plot($("#updating-chart"), [getRandomData()], options);
+        var plot = \$.plot(\$("#updating-chart"), [getRandomData()], options);
 
         /* live switch */
-        $('input[type="checkbox"]#start_interval').click(function () {
-            if ($(this).prop('checked')) {
-                $on = true;
+        \$('input[type="checkbox"]#start_interval').click(function () {
+            if (\$(this).prop('checked')) {
+                \$on = true;
                 updateInterval = 1500;
                 update();
             } else {
                 clearInterval(updateInterval);
-                $on = false;
+                \$on = false;
             }
         });
 
         function update() {
-            if ($on == true) {
+            if (\$on == true) {
                 plot.setData([getRandomData()]);
                 plot.draw();
                 setTimeout(update, updateInterval);
@@ -302,13 +303,13 @@ var pagefunction = function () {
 
         }
 
-        var $on = false;
+        var \$on = false;
 
         /*end updating chart*/
 
         /* TAB 2: Social Network  */
 
-        $(function () {
+        \$(function () {
             // jQuery Flot Chart
             var twitter = [
                         [1, 27],
@@ -394,7 +395,7 @@ var pagefunction = function () {
                 colors: ["#568A89", "#3276B1"],
                 tooltip: true,
                 tooltipOpts: {
-                    //content : "Value <b>$x</b> Value <span>$y</span>",
+                    //content : "Value <b>\$x</b> Value <span>\$y</span>",
                     defaultTheme: false
                 },
                 xaxis: {
@@ -419,7 +420,7 @@ var pagefunction = function () {
                 }
             };
 
-            var plot3 = $.plot($("#statsChart"), data, options);
+            var plot3 = \$.plot(\$("#statsChart"), data, options);
         });
 
         // END TAB 2
@@ -427,7 +428,7 @@ var pagefunction = function () {
         // TAB THREE GRAPH //
         /* TAB 3: Revenew  */
 
-        $(function () {
+        \$(function () {
 
             var trgt = [
                         [1354586000000, 153],
@@ -471,8 +472,8 @@ var pagefunction = function () {
                         [1454596000000, 241],
                         [1464597000000, 341]
                     ],
-                    toggles = $("#rev-toggles"),
-                    target = $("#flotcontainer");
+                    toggles = \$("#rev-toggles"),
+                    target = \$("#flotcontainer");
 
             var data = [
                 {
@@ -525,7 +526,7 @@ var pagefunction = function () {
                 },
                 yaxes: {
                     tickFormatter: function (val, axis) {
-                        return "$" + val;
+                        return "\$" + val;
                     },
                     max: 1200
                 }
@@ -537,8 +538,8 @@ var pagefunction = function () {
             function plotNow() {
                 var d = [];
                 toggles.find(':checkbox').each(function () {
-                    if ($(this).is(':checked')) {
-                        d.push(data[$(this).attr("name").bstr(4, 1)]);
+                    if (\$(this).is(':checked')) {
+                        d.push(data[\$(this).attr("name").bstr(4, 1)]);
                     }
                 });
                 if (d.length > 0) {
@@ -546,7 +547,7 @@ var pagefunction = function () {
                         plot2.setData(d);
                         plot2.draw();
                     } else {
-                        plot2 = $.plot(target, d, options);
+                        plot2 = \$.plot(target, d, options);
                     }
                 }
 
@@ -585,7 +586,7 @@ var pagefunction = function () {
     }
 
     function renderVectorMap() {
-        $('#vector-map').vectorMap({
+        \$('#vector-map').vectorMap({
             map: 'world_mill_en',
             backgroundColor: '#fff',
             regionStyle: {
@@ -625,13 +626,13 @@ var pagefunction = function () {
 
     function setupCalendar() {
 
-        if ($("#calendar").length) {
+        if (\$("#calendar").length) {
             var date = new Date();
             var d = date.getDate();
             var m = date.getMonth();
             var y = date.getFullYear();
 
-            var calendar = $('#calendar').fullCalendar({
+            var calendar = \$('#calendar').fullCalendar({
 
                 editable: true,
                 draggable: true,
@@ -735,52 +736,52 @@ var pagefunction = function () {
         ;
 
         /* hide default buttons */
-        $('.fc-header-right, .fc-header-center').hide();
+        \$('.fc-header-right, .fc-header-center').hide();
 
     }
 
     // calendar prev
-    $('#calendar-buttons #btn-prev').click(function () {
-        $('.fc-button-prev').click();
+    \$('#calendar-buttons #btn-prev').click(function () {
+        \$('.fc-button-prev').click();
         return false;
     });
 
     // calendar next
-    $('#calendar-buttons #btn-next').click(function () {
-        $('.fc-button-next').click();
+    \$('#calendar-buttons #btn-next').click(function () {
+        \$('.fc-button-next').click();
         return false;
     });
 
     // calendar today
-    $('#calendar-buttons #btn-today').click(function () {
-        $('.fc-button-today').click();
+    \$('#calendar-buttons #btn-today').click(function () {
+        \$('.fc-button-today').click();
         return false;
     });
 
     // calendar month
-    $('#mt').click(function () {
-        $('#calendar').fullCalendar('changeView', 'month');
+    \$('#mt').click(function () {
+        \$('#calendar').fullCalendar('changeView', 'month');
     });
 
     // calendar agenda week
-    $('#ag').click(function () {
-        $('#calendar').fullCalendar('changeView', 'agendaWeek');
+    \$('#ag').click(function () {
+        \$('#calendar').fullCalendar('changeView', 'agendaWeek');
     });
 
     // calendar agenda day
-    $('#td').click(function () {
-        $('#calendar').fullCalendar('changeView', 'agendaDay');
+    \$('#td').click(function () {
+        \$('#calendar').fullCalendar('changeView', 'agendaDay');
     });
 
     /*
      * CHAT
      */
 
-    $.filter_input = $('#filter-chat-list');
-    $.chat_users_container = $('#chat-container > .chat-list-body')
-    $.chat_users = $('#chat-users')
-    $.chat_list_btn = $('#chat-container > .chat-list-open-close');
-//    $.chat_body = $('#chat-body');
+    \$.filter_input = \$('#filter-chat-list');
+    \$.chat_users_container = \$('#chat-container > .chat-list-body')
+    \$.chat_users = \$('#chat-users')
+    \$.chat_list_btn = \$('#chat-container > .chat-list-open-close');
+//    \$.chat_body = \$('#chat-body');
 
     /*
      * LIST FILTER (CHAT)
@@ -794,35 +795,35 @@ var pagefunction = function () {
     function listFilter(list) { // header is any element, list is an unordered list
         // create and add the filter form to the header
 
-        $.filter_input.change(function () {
-            var filter = $(this).val();
+        \$.filter_input.change(function () {
+            var filter = \$(this).val();
             if (filter) {
                 // this finds all links in a list that contain the input,
                 // and hide the ones not containing the input while showing the ones that do
-                $.chat_users.find("a:not(:Contains(" + filter + "))").parent().slideUp();
-                $.chat_users.find("a:Contains(" + filter + ")").parent().slideDown();
+                \$.chat_users.find("a:not(:Contains(" + filter + "))").parent().slideUp();
+                \$.chat_users.find("a:Contains(" + filter + ")").parent().slideDown();
             } else {
-                $.chat_users.find("li").slideDown();
+                \$.chat_users.find("li").slideDown();
             }
             return false;
         }).keyup(function () {
             // fire the above change event after every letter
-            $(this).change();
+            \$(this).change();
 
         });
 
     }
 
     // on dom ready
-    listFilter($.chat_users);
+    listFilter(\$.chat_users);
 
     // open chat list
-    $.chat_list_btn.click(function () {
-        $(this).parent('#chat-container').toggleClass('open');
+    \$.chat_list_btn.click(function () {
+        \$(this).parent('#chat-container').toggleClass('open');
     });
 
-//    $.chat_body.animate({
-//        scrollTop: $.chat_body[0].scrollHeight
+//    \$.chat_body.animate({
+//        scrollTop: \$.chat_body[0].scrollHeight
 //    }, 500);
 
 };

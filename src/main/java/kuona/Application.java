@@ -12,6 +12,8 @@ import org.stringtemplate.v4.STGroupDir;
 import org.stringtemplate.v4.STRawGroupDir;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -41,11 +43,28 @@ public class Application {
                 case "create":
                     createSite(arguments);
                     break;
+                case "serve":
+                    startServer(arguments);
                 default:
                     System.err.println("Unrecognised command " + args[0] + "\n");
                     usage();
                     break;
             }
+        }
+    }
+
+    private void startServer(List<String> arguments) {
+        Configuration config = null;
+        try {
+            config = Configuration.read(new FileInputStream("config.yml"));
+
+        String sitePath = config.getSitePath();
+
+        KuonaServer server = new KuonaServer(sitePath);
+
+        server.start();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -111,65 +130,6 @@ public class Application {
                 "create name    Create a new projects in the named directory. Once created you can update the config.yml\n" +
                 "               file with the required CI settings.\n" +
                 "\n");
-    }
-
-
-    private static void testOne() {
-        try {
-            puts("***");
-            STGroup g = new STRawGroupDir("templates/project/");
-
-            puts("Reading a text file template file from the classpath");
-            ST st = g.getInstanceOf("_config.yml");
-            st.add("name", "Graham Brooks");
-
-            System.out.println(st.render());
-            puts("***");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void testOneA() {
-        try {
-            puts("***");
-            STGroup g = new STRawGroupDir("templates/project/");
-
-            puts("Reading a text file template file from the classpath");
-            ST st = g.getInstanceOf("_config.yml");
-
-            System.out.println(st.render());
-            puts("***");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void testTwo() {
-        try {
-            puts("***");
-            STGroup g = new STGroupDir("templates/project");
-            puts("Reading a foobar template containing template syntax");
-            ST st2 = g.getInstanceOf("foobar");
-            System.out.println(st2.render());
-            puts("***");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void testThree() {
-        try {
-            puts("***");
-            puts("Reading template file using a path");
-
-            ST config = new ST("templates/project/_config.yml.st");
-
-            System.out.println(config.render());
-            puts("***");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 
