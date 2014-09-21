@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<project name="kuona" default="test" basedir=".">
+
+    <property name="java.sources.dir" value="${basedir}/src/main/java"/>
+    <property name="java.test.sources.dir" value="${basedir}/src/test/java"/>
+    <property name="build.dir" value="${basedir}/build"/>
+    <property name="classes" value="${build.dir}/classes"/>
+    <property name="test.classes" value="${build.dir}/test-classes"/>
+    <property name="one-jar.dist.dir" value="Tools/one-jar-ant"/>
+    <property name="test.report.dir" value="${build.dir}/test-reports"/>
+    <property name="app-jar" value="${ant.project.name}.jar"/>
+    <property name="app-jar-complete" value="${ant.project.name}-complete.jar"/>
+    <property name="app-test-jar" value="${ant.project.name}-test.jar"/>
+
+    <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask"
+             classpath="tools/one-jar-ant-task-0.97.jar" onerror="report"/>
+
+    <path id="runtime.classpath">
+        <pathelement location="lib/antlr-4.2-complete.jar"/>
+        <pathelement location="lib/ST-4.0.8.jar"/>
+        <pathelement location="lib/guava-16.0.1.jar"/>
+        <pathelement location="lib/commons-lang-2.6.jar"/>
+        <pathelement location="lib/commons-io-2.2.jar"/>
+        <pathelement location="lib/httpclient-4.3.1.jar"/>
+        <pathelement location="lib/httpcore-4.3.jar"/>
+        <pathelement location="lib/jackson-core-2.4.2.jar"/>
+        <pathelement location="lib/jackson-databind-2.3.2.jar"/>
+        <pathelement location="lib/jackson-dataformat-yaml-2.4.0.jar"/>
+        <pathelement location="lib/jackson-annotations-2.3.0.jar"/>
+        <pathelement location="lib/commons-logging-1.1.3.jar"/>
+        <pathelement location="lib/commons-codec-1.6.jar"/>
+    </path>
+
+    <path id="test.lib.classpath">
+        <pathelement location="lib/test/junit-4.11.jar"/>
+        <pathelement location="lib/test/hamcrest-core-1.3.jar"/>
+        <pathelement location="lib/test/mockito-all-1.9.5.jar"/>
+    </path>
+
+    <path id="test.classpath">
+        <path refid="runtime.classpath"/>
+        <path refid="test.lib.classpath"/>
+        <pathelement location="src/test/resources"/>
+        <path location="${app-jar}"/>
+    </path>
+
+    <target name="compile">
+        <mkdir dir="${classes}"/>
+
+        <javac srcdir="${java.sources.dir}"
+               destdir="${classes}"
+               classpathref="runtime.classpath"
+               includeantruntime="no"
+               source="1.8" target="1.8"
+                />
+    </target>
+
+    <target name="compile.tests" depends="compile">
+        <mkdir dir="${test.classes}"/>
+
+        <javac srcdir="${java.test.sources.dir}"
+               destdir="${test.classes}"
+               classpathref="test.classpath"
+               includeantruntime="no"
+               source="1.8" target="1.8"
+                />
+    </target>
+
+    <target name="test" depends="package, test-package">
+        <mkdir dir="${test.report.dir}"/>
+        <delete>
+            <fileset dir="${test.report.dir}"/>
+        </delete>
+        <mkdir dir="${test.report.dir}"/>
+
+        <junit printsummary="yes" haltonfailure="yes">
+            <classpath>
+                <path refid="test.classpath"/>
+                <pathelement path="${app-test-jar}"/>
+            </classpath>
+
+            <formatter type="plain"/>
+
+            <batchtest fork="yes" todir="${test.report.dir}">
+                <fileset dir="${java.test.sources.dir}" includes="**/*Test?.java"/>
+            </batchtest>
+        </junit>
+    </target>
+
+
+    <target name="package" depends="compile">
+        <jar basedir="${classes}" destfile="${app-jar}">
+            <manifest>
+                <attribute name="Main-Class" value="kuona.Main"/>
+            </manifest>
+        </jar>
+
+        <one-jar destfile="${app-jar-complete}">
+            <manifest>
+                <attribute name="Main-Class" value="kuona.Main"/>
+                <attribute name="One-Jar-Main-Class" value="kuona.Main"/>
+            </manifest>
+            <main>
+                <fileset dir="${classes}"/>
+                <fileset dir="src/main/resources"/>
+            </main>
+
+            <lib>
+                <fileset dir="lib" includes="*.jar"/>
+            </lib>
+        </one-jar>
+    </target>
+
+    <target name="test-package" depends="compile.tests">
+        <jar destfile="${app-test-jar}" basedir="${test.classes}"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="build"/>
+        <delete file="${app-jar}"/>
+        <delete file="${app-jar-complete}"/>
+        <delete file="${app-test-jar}"/>
+    </target>
+</project>

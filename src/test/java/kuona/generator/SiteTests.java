@@ -29,7 +29,7 @@ public class SiteTests {
     public void createsFileWithContents() throws IOException {
         Site s = new Site();
 
-        String testFilename = "test.file";
+        String testFilename = "./test.file";
         s.createFile(testFilename, new ByteArrayInputStream("Testing".getBytes()));
 
         assertTrue(new File(testFilename).isFile());

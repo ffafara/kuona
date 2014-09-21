@@ -4,9 +4,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.offbytwo.jenkins.JenkinsServer;
-import com.offbytwo.jenkins.model.Build;
-import com.offbytwo.jenkins.model.Job;
 import kuona.generator.Site;
 import kuona.generator.SiteGenerator;
 import org.stringtemplate.v4.ST;
@@ -15,16 +12,12 @@ import org.stringtemplate.v4.STGroupDir;
 import org.stringtemplate.v4.STRawGroupDir;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static kuona.utils.Utils.puts;
 

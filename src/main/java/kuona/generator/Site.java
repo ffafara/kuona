@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static kuona.utils.Utils.puts;
 
@@ -25,7 +28,6 @@ public class Site {
         File theDir = new File(name);
 
         if (!theDir.exists()) {
-            trace("Creating directory " + name);
             boolean result = false;
 
             theDir.mkdir();
@@ -34,8 +36,12 @@ public class Site {
 
     public void createFile(String filename, InputStream contents) {
         try {
-            trace("Creating file " + filename);
-            File file = new File(filename);
+            final Path path = Paths.get(new File(filename).getParent());
+
+            if (!path.toFile().exists()) {
+
+                Files.createDirectories(path);
+            }
 
             OutputStream os = new FileOutputStream(filename);
 

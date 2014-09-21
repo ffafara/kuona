@@ -1,10 +1,10 @@
 package kuona.generator;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URL;
+import java.security.CodeSource;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class SiteGenerator {
     private final Site site;
@@ -15,15 +15,51 @@ public class SiteGenerator {
     }
 
     public void generate(String resourceRoot, String name) {
-        ClassLoader loader = SiteGenerator.class.getClassLoader();
-
-        InputStream rootStream = loader.getResourceAsStream(resourceRoot);
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(rootStream));
-
-        site.createDirectory(name);
-
+        ClassLoader loader = getClass().getClassLoader();
         try {
+            generateFromClasspath(resourceRoot, name, loader);
+        } catch (Exception e) {
+            generateFromJar(resourceRoot, name);
+        }
+        System.out.println("Site generated to " + name);
+    }
+
+    private void generateFromJar(String resourceRoot, String name) {
+        try {
+            CodeSource src = SiteGenerator.class.getProtectionDomain().getCodeSource();
+
+            if (src != null) {
+
+                URL jar = src.getLocation();
+                ZipInputStream zip = new ZipInputStream(jar.openStream());
+
+                while (true) {
+                    ZipEntry e = zip.getNextEntry();
+                    if (e == null)
+                        break;
+                    String filename = e.getName();
+
+                    if (filename.startsWith(resourceRoot) && filename.length() > resourceRoot.length() + 1) {
+                        String targetPath = filename.replace(resourceRoot + File.separatorChar, "");
+                        if (targetPath.contains(".")) {
+                            site.createFile(name + File.separatorChar + targetPath, zip);
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private void generateFromClasspath(String resourceRoot, String name, ClassLoader loader) {
+        try {
+            InputStream rootStream = loader.getResourceAsStream(resourceRoot);
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(rootStream));
+
+            site.createDirectory(name);
+
             String line = reader.readLine();
             while (line != null) {
                 if (line.contains("."))
@@ -34,7 +70,7 @@ public class SiteGenerator {
                 line = reader.readLine();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }
