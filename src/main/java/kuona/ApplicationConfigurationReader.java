@@ -7,7 +7,6 @@ import com.offbytwo.jenkins.JenkinsServer;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -24,8 +23,11 @@ public class ApplicationConfigurationReader {
 
     public ApplicationConfiguration read() {
         try {
-            return read(new FileInputStream("config.yml"));
-        } catch (FileNotFoundException e) {
+            FileInputStream source = new FileInputStream("config.yml");
+            ApplicationConfiguration config = read(source);
+            source.close();
+            return config;
+        } catch (Exception e) {
             return null;
         }
     }
