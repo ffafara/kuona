@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.JenkinsServer;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,11 +15,16 @@ import static kuona.utils.Utils.puts;
 
 public class SiteUpdate {
 
+    private final ApplicationConfiguration config;
+
+    public SiteUpdate(ApplicationConfiguration config) {
+
+        this.config = config;
+    }
+
     public void update() {
         try {
             puts("Updating CI data");
-            Configuration config = Configuration.read(new FileInputStream("config.yml"));
-
             String sitePath = config.getSitePath();
 
             List<JenkinsServer> servers = config.servers();
@@ -43,10 +47,9 @@ public class SiteUpdate {
             dashboard.put("lastUpdated", new SimpleDateFormat("HH:mm:ss").format(new Date()));
             dashboard.put("version", Application.VERSION);
 
-            Map sparklines = new HashMap<String, Object>(){{
+            Map sparklines = new HashMap<String, Object>() {{
                 put("activity", "110,150,300,130,400,240,220,310,220,300, 270, 210");
             }};
-
 
 
             dashboard.put("sparklines", sparklines);

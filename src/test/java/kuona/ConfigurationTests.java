@@ -13,7 +13,8 @@ import static org.junit.Assert.assertThat;
 public class ConfigurationTests {
     @Test
     public void readsProjectName() throws IOException {
-        Configuration config = Configuration.read(IOUtils.toInputStream("name: foo", "UTF-8"));
+        ApplicationConfigurationReader configurationReader = new ApplicationConfigurationReader();
+        ApplicationConfiguration config = configurationReader.read(IOUtils.toInputStream("name: foo", "UTF-8"));
 
         assertThat(config.name(), is("foo"));
     }
@@ -21,13 +22,14 @@ public class ConfigurationTests {
     @Test
     public void readsServers() {
         String configText =
-                        "servers:\n" +
+                "servers:\n" +
                         "  - name: Some name\n" +
                         "    url: http://example.com\n" +
                         "    username: test-username\n" +
                         "    password: test-password";
 
-        Configuration config = Configuration.read(IOUtils.toInputStream(configText));
+        ApplicationConfigurationReader configurationReader = new ApplicationConfigurationReader();
+        ApplicationConfiguration config = configurationReader.read(IOUtils.toInputStream(configText));
 
         final List<JenkinsServer> servers = config.servers();
 
