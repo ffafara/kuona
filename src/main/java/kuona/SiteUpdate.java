@@ -1,9 +1,11 @@
 package kuona;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.Job;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,12 +29,10 @@ public class SiteUpdate {
             puts("Updating CI data");
             String sitePath = config.getSitePath();
 
-            List<JenkinsServer> servers = config.servers();
-
             Map<String, Object> dashboard = new HashMap<>();
             List<Map> dashboardServers = new ArrayList<>();
 
-            for (JenkinsServer jenkins : servers) {
+            config.servers().stream().forEach(jenkins -> {
                 puts("Updating " + jenkins.getURI());
                 dashboardServers.add(new HashMap<String, String>() {
                     {
@@ -41,7 +41,7 @@ public class SiteUpdate {
                         put("uri", jenkins.getURI().toString());
                     }
                 });
-            }
+            });
 
             dashboard.put("servers", dashboardServers);
             dashboard.put("lastUpdated", new SimpleDateFormat("HH:mm:ss").format(new Date()));
@@ -65,19 +65,30 @@ public class SiteUpdate {
             mapper.writeValue(new File(dashboardFilepath), dashboard);
 
 
-//            for (JenkinsServer jenkins : servers) {
-//                Map<String, Job> jobs = jenkins.getJobs();
-//
-//                for (String key : jobs.keySet()) {
-//                    final Job job = jobs.get(key);
-//
-//                    final List<Build> builds = job.details().getBuilds();
-//
-//                    for (Build buildDetails : builds) {
-//                        prettifyJson(buildDetails.detailsJson());
-//                    }
-//                }
-//            }
+            config.servers().stream().forEach(jenkins -> {
+                try {
+                    jenkins.getJobs().keySet().stream().forEach(key -> {
+                        try {
+                            final Job job = jenkins.getJob(key);
+
+                            final List<Build> builds = job.details().getBuilds();
+                            builds.stream().forEach(buildDetails -> {
+                                try {
+
+                                    puts(buildDetails.detailsJson());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
