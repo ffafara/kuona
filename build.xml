@@ -86,7 +86,8 @@
                 <pathelement path="${app-test-jar}"/>
             </classpath>
 
-            <formatter type="plain"/>
+            <formatter type="brief" usefile="false" unless="ci-build"/>
+            <formatter type="xml" if="ci-build"/>
 
             <batchtest fork="yes" todir="${test.report.dir}">
                 <fileset dir="${java.test.sources.dir}" includes="**/*Test?.java"/>
