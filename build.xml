@@ -11,6 +11,10 @@
     <property name="app-jar" value="${ant.project.name}.jar"/>
     <property name="app-jar-complete" value="${ant.project.name}-complete.jar"/>
     <property name="app-test-jar" value="${ant.project.name}-test.jar"/>
+    <property name="findbugs.home" value="${basedir}/tools/findbugs"/>
+    <property name="cobertura.dir" value="${basedir}/tools/cobertura"/>
+    <property name="reports.dir" location="${build.dir}"/>
+    <property name="instrumented.dir" value="${build.dir}/instrumented"/>
 
     <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask"
              classpath="tools/one-jar-ant-task-0.97.jar" onerror="report"/>
@@ -31,6 +35,21 @@
         <pathelement location="src/test/resources"/>
         <path location="${app-jar}"/>
     </path>
+
+    <path id="cobertura.class.path">
+        <fileset dir="${cobertura.dir}">
+            <include name="cobertura-2.0.3.jar"/>
+            <include name="lib/**/*.jar"/>
+        </fileset>
+    </path>
+
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+        <classpath>
+            <fileset dir="${findbugs.home}/lib" includes="*.jar"/>
+        </classpath>
+    </taskdef>
+
+    <taskdef classpathref="cobertura.class.path" resource="tasks.properties"/>
 
     <target name="compile">
         <mkdir dir="${classes}"/>
@@ -101,6 +120,54 @@
 
     <target name="test-package" depends="compile.tests">
         <jar destfile="${app-test-jar}" basedir="${test.classes}"/>
+    </target>
+
+
+    <target name="ci-property-setup">
+        <property name="ci-build" value="true"/>
+        <echo message="ci-build property is ${ci-build}"/>
+    </target>
+
+    <target name="instrument" depends="compile">
+        <mkdir dir="${instrumented.dir}"/>
+        <cobertura-instrument todir="${instrumented.dir}" datafile="${build.dir}/cobertura.ser">
+            <fileset dir="${build.dir}" includes="*.jar" excludes="*test.jar"/>
+        </cobertura-instrument>
+    </target>
+
+    <target name="coverage" depends="instrument, test">
+        <cobertura-report format="html" destdir="${reports.dir}/html/cobertura"
+                          datafile="${build.dir}/cobertura.ser">
+            <fileset dir="src/main/java">
+                <include name="**/*.java"/>
+            </fileset>
+        </cobertura-report>
+        <cobertura-report format="xml" destdir="${reports.dir}/xml"
+                          datafile="${build.dir}/cobertura.ser">
+            <fileset dir="src/main/java">
+                <include name="**/*.java"/>
+            </fileset>
+        </cobertura-report>
+    </target>
+
+    <target name="findbugs">
+        <sequential>
+            <mkdir dir="${reports.dir}/xml"/>
+            <findbugs home="${findbugs.home}"
+                      failOnError="true"
+                      output="xml"
+                      outputFile="${reports.dir}/xml/findbugs.xml">
+                <auxClasspath>
+                    <path refid="test.classpath"/>
+                </auxClasspath>
+                <sourcePath path="src/main/java"/>
+                <class location="kuona.jar"/>
+            </findbugs>
+        </sequential>
+    </target>
+
+
+    <target name="ci" depends="clean, ci-property-setup, coverage, findbugs">
     </target>
 
     <target name="clean">
