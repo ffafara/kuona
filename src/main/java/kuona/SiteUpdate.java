@@ -69,9 +69,8 @@ public class SiteUpdate {
                 try {
                     jenkins.getJobs().keySet().stream().forEach(key -> {
                         try {
-                            final Job job = jenkins.getJob(key);
+                            final List<Build> builds = jenkins.getJob(key).details().getBuilds();
 
-                            final List<Build> builds = job.details().getBuilds();
                             builds.stream().forEach(buildDetails -> {
                                 try {
 
