@@ -17,13 +17,15 @@ import java.util.Map;
 
 public class ApplicationConfigurationReader {
 
+    public static final String FILENAME = "config.yml";
+
     public boolean exists() {
-        return new File("config.yml").isFile();
+        return new File(FILENAME).isFile();
     }
 
     public ApplicationConfiguration read() {
         try {
-            FileInputStream source = new FileInputStream("config.yml");
+            FileInputStream source = new FileInputStream(FILENAME);
             ApplicationConfiguration config = read(source);
             source.close();
             return config;

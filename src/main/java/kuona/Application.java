@@ -32,6 +32,14 @@ public class Application {
                     break;
                 case "serve":
                     startServer(arguments);
+                    break;
+                case "update":
+                    if (configExists()) {
+                        updateSite();
+                    } else {
+                        System.err.println("Configuration file " + ApplicationConfigurationReader.FILENAME + " not found");
+                    }
+                    break;
                 default:
                     System.err.println("Unrecognised command " + args[0] + "\n");
                     usage();

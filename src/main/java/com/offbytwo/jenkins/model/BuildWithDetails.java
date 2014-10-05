@@ -110,4 +110,8 @@ public class BuildWithDetails extends Build {
         URI artifactUri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), artifactPath, "", "");
         return client.getFile(artifactUri);
     }
+
+    public static int getDuration(BuildWithDetails buildWithDetails) {
+        return buildWithDetails.getDuration();
+    }
 }

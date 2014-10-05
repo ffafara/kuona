@@ -2,16 +2,13 @@ package kuona;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.model.Build;
-import com.offbytwo.jenkins.model.Job;
+import com.offbytwo.jenkins.model.BuildWithDetails;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static kuona.utils.Utils.puts;
 
@@ -25,6 +22,7 @@ public class SiteUpdate {
     }
 
     public void update() {
+        ArrayList<BuildWithDetails> completedBuilds = new ArrayList<>();
         try {
             puts("Updating CI data");
             String sitePath = config.getSitePath();
@@ -43,9 +41,37 @@ public class SiteUpdate {
                 });
             });
 
+
+            config.servers().stream().forEach(jenkins -> {
+                try {
+                    jenkins.getJobs().keySet().stream().forEach(key -> {
+                        try {
+                            final List<Build> builds = jenkins.getJob(key).details().getBuilds();
+
+                            builds.stream().forEach(buildDetails -> {
+                                try {
+                                    final BuildWithDetails details = buildDetails.details();
+                                    completedBuilds.add(details);
+                                    puts(buildDetails.detailsJson());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
             dashboard.put("servers", dashboardServers);
-            dashboard.put("lastUpdated", new SimpleDateFormat("HH:mm:ss").format(new Date()));
+            dashboard.put("lastUpdated", new Date());
             dashboard.put("version", Application.VERSION);
+            dashboard.put("averageBuildTime", completedBuilds.stream().filter(b -> !b.isBuilding()).collect(Collectors.averagingInt(b -> b.getDuration())));
+
 
             Map sparklines = new HashMap<String, Object>() {{
                 put("activity", "110,150,300,130,400,240,220,310,220,300, 270, 210");
@@ -65,32 +91,18 @@ public class SiteUpdate {
             mapper.writeValue(new File(dashboardFilepath), dashboard);
 
 
-            config.servers().stream().forEach(jenkins -> {
-                try {
-                    jenkins.getJobs().keySet().stream().forEach(key -> {
-                        try {
-                            final List<Build> builds = jenkins.getJob(key).details().getBuilds();
-
-                            builds.stream().forEach(buildDetails -> {
-                                try {
-
-                                    puts(buildDetails.detailsJson());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+
+
+//        Map<long, int> BuildByDate = roster
+//                .stream()
+//                .collect(
+//                        Collectors.groupingBy(
+//                                Person::getGender,
+//                                Collectors.averagingInt(Person::getAge)));
 
     }
 }
