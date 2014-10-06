@@ -6,7 +6,6 @@ import com.offbytwo.jenkins.model.BuildWithDetails;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -94,15 +93,5 @@ public class SiteUpdate {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-
-
-//        Map<long, int> BuildByDate = roster
-//                .stream()
-//                .collect(
-//                        Collectors.groupingBy(
-//                                Person::getGender,
-//                                Collectors.averagingInt(Person::getAge)));
-
     }
 }
