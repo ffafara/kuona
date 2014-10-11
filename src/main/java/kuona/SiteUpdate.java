@@ -3,10 +3,16 @@ package kuona;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
+import com.offbytwo.jenkins.model.JobWithDetails;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static kuona.utils.Utils.puts;
@@ -40,18 +46,33 @@ public class SiteUpdate {
                 });
             });
 
+            Map<Integer, int[]> activity = new HashMap<>();
 
             config.servers().stream().forEach(jenkins -> {
                 try {
                     jenkins.getJobs().keySet().stream().forEach(key -> {
                         try {
-                            final List<Build> builds = jenkins.getJob(key).details().getBuilds();
+                            JobWithDetails job = jenkins.getJob(key);
+                            final List<Build> builds = job.details().getBuilds();
 
                             builds.stream().forEach(buildDetails -> {
                                 try {
                                     final BuildWithDetails details = buildDetails.details();
+                                    Timestamp timestamp = new Timestamp(details.getTimestamp());
+
+                                    Date buildDate = new Date(timestamp.getTime());
+
+                                    int year = buildDate.getYear() + 1900;
+
+                                    if (!activity.containsKey(year)) {
+                                        activity.put(year, new int[12]);
+                                    }
+
+                                    int[] yearMap = activity.get(year);
+                                    yearMap[buildDate.getMonth()] += 1;
+
+//                                    puts(job.getDisplayName() + " - " + buildDate);
                                     completedBuilds.add(details);
-                                    puts(buildDetails.detailsJson());
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -66,14 +87,31 @@ public class SiteUpdate {
                 }
             });
 
+            dashboard.put("title", "Kuona build analytics");
             dashboard.put("servers", dashboardServers);
             dashboard.put("lastUpdated", new Date());
             dashboard.put("version", Application.VERSION);
             dashboard.put("averageBuildTime", completedBuilds.stream().filter(b -> !b.isBuilding()).collect(Collectors.averagingInt(b -> b.getDuration())));
 
 
+            Date today = new Date();
             Map sparklines = new HashMap<String, Object>() {{
-                put("activity", "110,150,300,130,400,240,220,310,220,300, 270, 210");
+                int currentYear = today.getYear() + 1900;
+                if (activity.containsKey(currentYear)) {
+                    int[] values = activity.get(currentYear);
+                    put("activity", values[0] +
+                            ", " + values[1] +
+                            ", " + values[2] +
+                            ", " + values[3] +
+                            ", " + values[4] +
+                            ", " + values[5] +
+                            ", " + values[6] +
+                            ", " + values[7] +
+                            ", " + values[8] +
+                            ", " + values[9] +
+                            ", " + values[10] +
+                            ", " + values[11]);
+                }
             }};
 
 

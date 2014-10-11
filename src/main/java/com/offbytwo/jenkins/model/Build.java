@@ -6,6 +6,8 @@
 
 package com.offbytwo.jenkins.model;
 
+import kuona.JenkinsClient;
+
 import java.io.IOException;
 
 public class Build extends BaseModel {
@@ -17,6 +19,10 @@ public class Build extends BaseModel {
 
     public Build(Build from) {
         this(from.getNumber(), from.getUrl());
+    }
+    public Build(Build from, JenkinsClient client) {
+        this(from.getNumber(), from.getUrl());
+        setClient(client);
     }
 
     public Build(int number, String url) {
@@ -34,8 +40,5 @@ public class Build extends BaseModel {
 
     public BuildWithDetails details() throws IOException {
         return client.get(url, BuildWithDetails.class);
-    }
-    public String detailsJson() throws IOException {
-        return client.get(url);
     }
 }

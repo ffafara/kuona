@@ -6,14 +6,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.model.BaseModel;
 import org.apache.commons.io.FileUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 
 public class Project {
-    public static final String CONTENT_FILENAME = "content";
+    private final URI url;
     private String name;
 
     public Project(URI url) {
+        this.url = url;
         this.name = url.getHost();
     }
 
@@ -21,8 +26,12 @@ public class Project {
         return name;
     }
 
-    public OutputStream openOutputSteam(String path) {
-        String contentPath = contentPath(path);
+    public OutputStream openOutputSteam(String path, Class cls) {
+        return openOutputSteam(path, cls.getSimpleName());
+    }
+
+    public OutputStream openOutputSteam(String path, String contentType) {
+        String contentPath = contentPath(path, contentType);
 
         try {
             return FileUtils.openOutputStream(new File(contentPath));
@@ -31,37 +40,50 @@ public class Project {
         }
     }
 
-    private String contentPath(String path) {
+    String contentPath(String path, String name) {
         final String relativePath = relativePath(path);
-        return (relativePath.endsWith("/")) ? relativePath + CONTENT_FILENAME : relativePath + File.separatorChar + CONTENT_FILENAME;
+        return (relativePath.endsWith("/")) ? relativePath + name : relativePath + File.separatorChar + name;
     }
+
     private String relativePath(String path) {
-        return (path.startsWith("/") || name.endsWith("/")) ? name + path : name + File.separatorChar + path;
+        String cleanPath = cleanPath(path);
+        return (cleanPath.startsWith("/") || name.endsWith("/")) ? name + cleanPath : name + File.separatorChar + cleanPath;
     }
 
-    public boolean exists(String path) {
-        return new File(contentPath(path)).exists();
-    }
-
-    public <T extends BaseModel> String read(String path) {
-        try {
-            return FileUtils.readFileToString(new File(contentPath(path)));
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private String cleanPath(String path) {
+        if (path.startsWith(url.toString())) {
+            return path.substring(url.toString().length());
         }
+        return path;
     }
 
-    public <T extends BaseModel> T get(String path, Class<T> cls) {
-
-        try {
-            final FileInputStream inputStream = FileUtils.openInputStream(new File(contentPath(path)));
-            return objectFromResponse(cls, inputStream);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+    public boolean exists(String path, Class cls) {
+        return new File(contentPath(path, cls.getSimpleName())).exists();
     }
+
+    public boolean exists(String path, String contentType) {
+        return new File(contentPath(path, contentType)).exists();
+    }
+
+//    public <T extends BaseModel> String get(String path, String contentType) {
+//        try {
+//            return FileUtils.readFileToString(new File(contentPath(path, contentType)));
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    public <T extends BaseModel> T get(String path, Class<T> cls) {
+//
+//        try {
+//            final FileInputStream inputStream = FileUtils.openInputStream(new File(contentPath(path, cls.getSimpleName())));
+//            return objectFromResponse(cls, inputStream);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
 
     private <T extends BaseModel> T objectFromResponse(Class<T> cls, InputStream content) throws IOException {
         final ObjectMapper mapper = getDefaultMapper();

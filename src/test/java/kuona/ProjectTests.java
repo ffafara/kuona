@@ -25,11 +25,11 @@ public class ProjectTests {
     public void openCreatesFileForWritingBasedOnName() throws IOException, URISyntaxException {
         final Project project = new Project(new URI("https://a:b@sub.example.com:8080"));
 
-        OutputStream output = project.openOutputSteam("foo.txt");
+        OutputStream output = project.openOutputSteam("/", "foo.txt");
         output.write("Hello".getBytes());
         output.close();
 
-        final File testFile = new File("sub.example.com");
+        final File testFile = new File("sub.example.com/foo.txt");
         assertThat(testFile.exists(), is(true));
 
         if (testFile.exists())

@@ -19,7 +19,7 @@ public class ProjectDeserializer extends Deserializer {
     @Override
     public  <T extends BaseModel> T objectFromResponse(Class<T> cls, InputStream content) {
         try {
-            PersistentInputStream tee = new PersistentInputStream(project.openOutputSteam(path), content);
+            PersistentInputStream tee = new PersistentInputStream(project.openOutputSteam(path, cls), content);
             final ObjectMapper mapper = getDefaultMapper();
             return mapper.readValue(tee, cls);
         } catch (Exception e) {

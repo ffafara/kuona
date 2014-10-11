@@ -40,10 +40,6 @@ public class Job extends BaseModel {
         return client.get(url, JobWithDetails.class);
     }
 
-    public String detailsJson()  throws IOException {
-        return client.get(url);
-    }
-
     private static class MapEntryToQueryStringPair implements Function<Map.Entry<String, String>, String> {
         @Override
         public String apply(Map.Entry<String, String> entry) {

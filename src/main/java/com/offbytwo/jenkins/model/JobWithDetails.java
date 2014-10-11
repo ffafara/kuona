@@ -35,17 +35,12 @@ public class JobWithDetails extends Job {
     }
 
     public List<Build> getBuilds() {
-        return Lists.transform(builds, new Function<Build, Build>() {
-            @Override
-            public Build apply(Build from) {
-                return buildWithClient(from);
-            }
-        });
+        return Lists.transform(builds, this::buildWithClient);
     }
 
     private Build buildWithClient(Build from) {
-        Build ret = new Build(from);
-        ret.setClient(client);
+        Build ret = new Build(from, client);
+//        ret.setClient(client);
         return ret;
     }
 

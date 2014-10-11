@@ -49,7 +49,7 @@ public class JenkinsServer {
      */
     public boolean isRunning() {
         try {
-            client.get("/");
+            client.get("/", "");
             return true;
         } catch (IOException e) {
             return false;

@@ -128,7 +128,7 @@ public class JenkinsHttpClient implements JenkinsClient {
      * @return the entity text
      * @throws IOException, HttpResponseException
      */
-    public String get(String path) throws IOException {
+    public String get(String path, String contentType) throws IOException {
         HttpGet getMethod = new HttpGet(api(path));
         HttpResponse response = client.execute(getMethod, localContext);
         try {

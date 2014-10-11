@@ -10,7 +10,7 @@ public interface JenkinsClient {
 
     URI getURI();
 
-    public String get(String path) throws IOException;
+    public String get(String path, String contentType) throws IOException;
 
     public <T extends BaseModel> T get(String path, Class<T> cls) throws IOException;
 
