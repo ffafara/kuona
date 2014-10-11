@@ -13,6 +13,7 @@ import com.offbytwo.jenkins.model.Computer;
 import com.offbytwo.jenkins.model.Job;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import com.offbytwo.jenkins.model.MainView;
+import kuona.JenkinsClient;
 import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
@@ -25,29 +26,8 @@ import java.util.Map;
  * The main starting point for interacting with a Jenkins server.
  */
 public class JenkinsServer {
-    private final JenkinsHttpClient client;
+    private final JenkinsClient client;
 
-
-    /**
-     * Create a new Jenkins server reference given only the server address
-     *
-     * @param serverUri address of jenkins server (ex. http://localhost:8080/jenkins)
-     */
-    public JenkinsServer(URI serverUri) {
-        this(new JenkinsHttpClient(serverUri));
-    }
-
-
-    /**
-     * Create a new Jenkins server reference given the address and credentials
-     *
-     * @param serverUri       address of jenkins server (ex. http://localhost:8080/jenkins)
-     * @param username        username to use when connecting
-     * @param passwordOrToken password (not recommended) or token (recommended)
-     */
-    public JenkinsServer(URI serverUri, String username, String passwordOrToken) {
-        this(new JenkinsHttpClient(serverUri, username, passwordOrToken));
-    }
 
     public URI getURI() {
        return client.getURI();
@@ -58,7 +38,7 @@ public class JenkinsServer {
      *
      * @param client Specialized client to use.
      */
-    public JenkinsServer(JenkinsHttpClient client) {
+    public JenkinsServer(JenkinsClient client) {
         this.client = client;
     }
 

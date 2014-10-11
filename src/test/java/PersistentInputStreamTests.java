@@ -24,7 +24,8 @@ public class PersistentInputStreamTests {
         OutputStream output = new ByteArrayOutputStream();
         InputStream testStream = new PersistentInputStream(output, base);
 
-        testStream.read();
+        assertThat(testStream.read(), is((int) 'a'));
+        assertThat(testStream.read(), is(-1));
 
         assertThat(output.toString(), is("a"));
     }

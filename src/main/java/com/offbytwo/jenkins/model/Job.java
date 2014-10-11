@@ -44,24 +44,6 @@ public class Job extends BaseModel {
         return client.get(url);
     }
 
-    /**
-     * Trigger a build without parameters
-     */
-    public void build() throws IOException {
-        client.post(url + "build");
-    }
-
-    /**
-     * Trigger a parameterized build
-     *
-     * @param params the job parameters
-     * @throws IOException
-     */
-    public void build(Map<String, String> params) throws IOException {
-        String qs = join(Collections2.transform(params.entrySet(), new MapEntryToQueryStringPair()), "&");
-        client.post(url + "buildWithParameters?" + qs, null, null);
-    }
-
     private static class MapEntryToQueryStringPair implements Function<Map.Entry<String, String>, String> {
         @Override
         public String apply(Map.Entry<String, String> entry) {

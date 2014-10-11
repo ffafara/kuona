@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.client.JenkinsHttpClient;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,7 +61,11 @@ public class ApplicationConfigurationReader {
                             String username = m.get("username");
                             String password = m.get("password");
 
-                            result.add(new JenkinsServer(new URI(url), username, password));
+                            final URI uri = new URI(url);
+                            final Project project = new Project(uri);
+                            final JenkinsLocalClient client = new JenkinsLocalClient(project, new JenkinsHttpClient(project, uri, username, password));
+
+                            result.add(new JenkinsServer(client));
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }

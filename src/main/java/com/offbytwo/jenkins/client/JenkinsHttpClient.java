@@ -12,6 +12,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.client.validator.HttpResponseValidator;
 import com.offbytwo.jenkins.model.BaseModel;
 import com.offbytwo.jenkins.model.Crumb;
+import kuona.Deserializer;
+import kuona.JenkinsClient;
+import kuona.Project;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -19,7 +22,6 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -34,7 +36,7 @@ import java.util.Scanner;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
-public class JenkinsHttpClient {
+public class JenkinsHttpClient implements JenkinsClient {
 
     private URI uri;
     private DefaultHttpClient client;
@@ -43,6 +45,7 @@ public class JenkinsHttpClient {
 
     private ObjectMapper mapper;
     private String context;
+    private Project project;
 
     /**
      * Create an unauthenticated Jenkins HTTP client
@@ -50,13 +53,13 @@ public class JenkinsHttpClient {
      * @param uri               Location of the jenkins server (ex. http://localhost:8080)
      * @param defaultHttpClient Configured DefaultHttpClient to be used
      */
-    public JenkinsHttpClient(URI uri, DefaultHttpClient defaultHttpClient) {
+    public JenkinsHttpClient(Project project, URI uri, DefaultHttpClient defaultHttpClient) {
         this.context = uri.getPath();
         if (!context.endsWith("/")) {
             context += "/";
         }
         this.uri = uri;
-        this.mapper = getDefaultMapper();
+        this.project = project;
         this.client = defaultHttpClient;
         this.httpResponseValidator = new HttpResponseValidator();
     }
@@ -66,8 +69,8 @@ public class JenkinsHttpClient {
      *
      * @param uri Location of the jenkins server (ex. http://localhost:8080)
      */
-    public JenkinsHttpClient(URI uri) {
-        this(uri, new DefaultHttpClient());
+    public JenkinsHttpClient(Project project, URI uri) {
+        this(project, uri, new DefaultHttpClient());
     }
 
     /**
@@ -77,8 +80,8 @@ public class JenkinsHttpClient {
      * @param username Username to use when connecting
      * @param password Password or auth token to use when connecting
      */
-    public JenkinsHttpClient(URI uri, String username, String password) {
-        this(uri);
+    public JenkinsHttpClient(Project project, URI uri, String username, String password) {
+        this(project, uri);
         if (isNotBlank(username)) {
             CredentialsProvider provider = client.getCredentialsProvider();
             AuthScope scope = new AuthScope(uri.getHost(), uri.getPort(), "realm");
@@ -101,11 +104,17 @@ public class JenkinsHttpClient {
      * @throws IOException, HttpResponseException
      */
     public <T extends BaseModel> T get(String path, Class<T> cls) throws IOException {
+        final Deserializer deserializer = project.getDeserializerFor(path);
         HttpGet getMethod = new HttpGet(api(path));
         HttpResponse response = client.execute(getMethod, localContext);
         try {
             httpResponseValidator.validateResponse(response);
-            return objectFromResponse(cls, response);
+            InputStream content = response.getEntity().getContent();
+            T result = deserializer.objectFromResponse(cls, content);
+            result.setClient(this);
+
+
+            return result;
         } finally {
             EntityUtils.consume(response.getEntity());
             releaseConnection(getMethod);
@@ -154,88 +163,6 @@ public class JenkinsHttpClient {
         }
     }
 
-    /**
-     * Perform a POST request and parse the response to the given class
-     *
-     * @param path path to request, can be relative or absolute
-     * @param data data to post
-     * @param cls  class of the response
-     * @param <R>  type of the response
-     * @param <D>  type of the data
-     * @return an instance of the supplied class
-     * @throws IOException, HttpResponseException
-     */
-    public <R extends BaseModel, D> R post(String path, D data, Class<R> cls) throws IOException {
-        HttpPost request = new HttpPost(api(path));
-        Crumb crumb = get("/crumbIssuer", Crumb.class);
-        if (crumb != null) {
-            request.addHeader(new BasicHeader(crumb.getCrumbRequestField(), crumb.getCrumb()));
-        }
-
-        if (data != null) {
-            StringEntity stringEntity = new StringEntity(mapper.writeValueAsString(data), "application/json");
-            request.setEntity(stringEntity);
-        }
-        HttpResponse response = client.execute(request, localContext);
-
-        try {
-            httpResponseValidator.validateResponse(response);
-
-            if (cls != null) {
-                return objectFromResponse(cls, response);
-            } else {
-                return null;
-            }
-        } finally {
-            EntityUtils.consume(response.getEntity());
-            releaseConnection(request);
-        }
-    }
-
-    /**
-     * Perform a POST request of XML (instead of using json mapper) and return a string rendering of the response
-     * entity.
-     *
-     * @param path     path to request, can be relative or absolute
-     * @param xml_data data data to post
-     * @return A string containing the xml response (if present)
-     * @throws IOException, HttpResponseException
-     */
-    public String post_xml(String path, String xml_data) throws IOException {
-        HttpPost request = new HttpPost(api(path));
-        Crumb crumb = get("/crumbIssuer", Crumb.class);
-        if (crumb != null) {
-            request.addHeader(new BasicHeader(crumb.getCrumbRequestField(), crumb.getCrumb()));
-        }
-
-        if (xml_data != null) {
-            request.setEntity(new StringEntity(xml_data, ContentType.APPLICATION_XML));
-        }
-        HttpResponse response = client.execute(request, localContext);
-        httpResponseValidator.validateResponse(response);
-        try {
-            InputStream content = response.getEntity().getContent();
-            Scanner s = new Scanner(content);
-            StringBuffer sb = new StringBuffer();
-            while (s.hasNext()) {
-                sb.append(s.next());
-            }
-            return sb.toString();
-        } finally {
-            EntityUtils.consume(response.getEntity());
-            releaseConnection(request);
-        }
-    }
-
-    /**
-     * Perform POST request that takes no parameters and returns no response
-     *
-     * @param path path to request
-     * @throws IOException, HttpResponseException
-     */
-    public void post(String path) throws IOException {
-        post(path, null, null);
-    }
 
     private String urlJoin(String path1, String path2) {
         if (!path1.endsWith("/")) {
@@ -258,13 +185,6 @@ public class JenkinsHttpClient {
             path = urlJoin(components[0], "api/json") + "?" + components[1];
         }
         return uri.resolve("/").resolve(path);
-    }
-
-    private <T extends BaseModel> T objectFromResponse(Class<T> cls, HttpResponse response) throws IOException {
-        InputStream content = response.getEntity().getContent();
-        T result = mapper.readValue(content, cls);
-        result.setClient(this);
-        return result;
     }
 
     private ObjectMapper getDefaultMapper() {

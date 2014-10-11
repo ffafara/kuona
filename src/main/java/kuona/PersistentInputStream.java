@@ -22,7 +22,13 @@ public class PersistentInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         final int c = base.read();
-        if (tee != null) tee.write(c);
+        if (tee != null && c != -1) tee.write(c);
         return c;
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        if (tee != null) tee.close();
     }
 }

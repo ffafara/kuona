@@ -6,16 +6,16 @@
 
 package com.offbytwo.jenkins.model;
 
-import com.offbytwo.jenkins.client.JenkinsHttpClient;
+import kuona.JenkinsClient;
 
 public class BaseModel {
-    JenkinsHttpClient client;
+    JenkinsClient client;
 
-    public JenkinsHttpClient getClient() {
+    public JenkinsClient getClient() {
         return client;
     }
 
-    public void setClient(JenkinsHttpClient client) {
+    public void setClient(JenkinsClient client) {
         this.client = client;
     }
 }
