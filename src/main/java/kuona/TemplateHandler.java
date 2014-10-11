@@ -1,5 +1,6 @@
 package kuona;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.stringtemplate.v4.ST;
@@ -24,7 +25,6 @@ public class TemplateHandler extends AbstractHandler {
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest, HttpServletResponse response) throws IOException, ServletException {
         if (templated(target)) {
-            byte[] encoded = Files.readAllBytes(Paths.get(templatePathForTarget(target)));
 
             String dashboardFilepath = sitePath + File.separatorChar + "dashboard.json";
 
@@ -32,14 +32,16 @@ public class TemplateHandler extends AbstractHandler {
 
             DashboardModel dashboard = reader.read(new FileInputStream(new File(dashboardFilepath)));
 
-            ST template = new ST(new String(encoded), '$', '$');
-            template.add("dashboard", dashboard);
+            String templateText = FileUtils.readFileToString(new File(templatePathForTarget(target)));
 
-            template.render();
+            ST template = new ST(templateText, '$', '$');
+            template.add("dashboard", dashboard);
 
             response.setStatus(200);
             response.setContentType("text/html");
-            response.getOutputStream().write(template.render().getBytes());
+            String rendered = template.render();
+            response.getOutputStream().write(rendered.getBytes());
+            request.setHandled(true);
         }
     }
 

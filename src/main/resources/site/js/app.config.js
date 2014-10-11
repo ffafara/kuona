@@ -31,7 +31,7 @@
  * GLOBAL: Your left nav in your app will no longer fire ajax calls, set 
  * it to false for HTML version
  */	
-	$.navAsAjax = true; 
+	$.navAsAjax = false; 
 /*
  * GLOBAL: Sound Config
  */
@@ -148,7 +148,7 @@
 /*
  * 	Use localstorage to remember on/off (best used with HTML Version)
  */	
-	voice_localStorage = false;
+	voice_localStorage = true;
 /*
  * Voice Commands
  * Defines all voice command variables and functions
@@ -157,39 +157,42 @@
 	 		
 		var commands = {
 					
-			'show dashboard' : function() { window.location.hash = "dashboard" },
-			'show inbox' : function() {  window.location.hash = "inbox" },
-			'show graphs' : function() {  window.location.hash = "graphs/flot" },
-			'show flotchart' : function() { window.location.hash = "graphs/flot" },
-			'show morris chart' : function() { window.location.hash = "graphs/morris" },
-			'show inline chart' : function() { window.location.hash = "graphs/inline-charts" },
-			'show dygraphs' : function() { window.location.hash = "graphs/dygraphs" },
-			'show tables' : function() { window.location.hash = "tables/table" },
-			'show data table' : function() { window.location.hash = "tables/datatable" },
-			'show jquery grid' : function() { window.location.hash = "tables/jqgrid" },
-			'show form' : function() { window.location.hash = "forms/form-elements" },
-			'show form layouts' : function() { window.location.hash = "forms/form-templates" },
-			'show form validation' : function() { window.location.hash = "forms/validation" },
-			'show form elements' : function() { window.location.hash = "forms/bootstrap-forms" },
-			'show form plugins' : function() { window.location.hash = "forms/plugins" },
-			'show form wizards' : function() { window.location.hash = "forms/wizards" },
-			'show bootstrap editor' : function() { window.location.hash = "forms/other-editors" },
-			'show dropzone' : function() { window.location.hash = "forms/dropzone" },
-			'show image cropping' : function() { window.location.hash = "forms/image-editor" },
-			'show general elements' : function() { window.location.hash = "ui/general-elements" },
-			'show buttons' : function() { window.location.hash = "ui/buttons" },
-			'show fontawesome' : function() { window.location.hash = "ui/icons/fa" },
-			'show glyph icons' : function() { window.location.hash = "ui/icons/glyph" },
-			'show flags' : function() { window.location.hash = "ui/icons/flags" },
-			'show grid' : function() { window.location.hash = "ui/grid" },
-			'show tree view' : function() { window.location.hash = "ui/treeview" },
-			'show nestable lists' : function() { window.location.hash = "ui/nestable-list" },
-			'show jquery U I' : function() { window.location.hash = "ui/jqui" },
-			'show typography' : function() { window.location.hash = "ui/typography" },
-			'show calendar' : function() { window.location.hash = "calendar" },
-			'show widgets' : function() { window.location.hash = "widgets" },
-			'show gallery' : function() { window.location.hash = "gallery" },
-			'show maps' : function() { window.location.hash = "gmap-xml" },
+			'show dashboard' : function() { $('nav a[href="dashboard.html"]').trigger("click"); },
+			'show inbox' : function() { $('nav a[href="inbox.html"]').trigger("click"); },
+			'show graphs' : function() { $('nav a[href="flot.html"]').trigger("click"); },
+			'show flotchart' : function() { $('nav a[href="flot.html"]').trigger("click"); },
+			'show morris chart' : function() { $('nav a[href="morris.html"]').trigger("click"); },
+			'show inline chart' : function() { $('nav a[href="inline-charts.html"]').trigger("click"); },
+			'show dygraphs' : function() { $('nav a[href="dygraphs.html"]').trigger("click"); },
+			'show tables' : function() { $('nav a[href="table.html"]').trigger("click"); },
+			'show data table' : function() { $('nav a[href="datatables.html"]').trigger("click"); },
+			'show jquery grid' : function() { $('nav a[href="jqgrid.html"]').trigger("click"); },
+			'show form' : function() { $('nav a[href="form-elements.html"]').trigger("click"); },
+			'show form layouts' : function() { $('nav a[href="form-templates.html"]').trigger("click"); },
+			'show form validation' : function() { $('nav a[href="validation.html"]').trigger("click"); },
+			'show form elements' : function() { $('nav a[href="bootstrap-forms.html"]').trigger("click"); },
+			'show form plugins' : function() { $('nav a[href="plugins.html"]').trigger("click"); },
+			'show form wizards' : function() { $('nav a[href="wizards.html"]').trigger("click"); },
+			'show bootstrap editor' : function() { $('nav a[href="other-editors.html"]').trigger("click"); },
+			'show dropzone' : function() { $('nav a[href="dropzone.html"]').trigger("click"); },
+			'show image cropping' : function() { $('nav a[href="image-editor.html"]').trigger("click"); },
+			'show general elements' : function() { $('nav a[href="general-elements.html"]').trigger("click"); },
+			'show buttons' : function() { $('nav a[href="buttons.html"]').trigger("click"); },
+			'show fontawesome' : function() { $('nav a[href="fa.html"]').trigger("click"); },
+			'show glyph icons' : function() { $('nav a[href="glyph.html"]').trigger("click"); },
+			'show flags' : function() { $('nav a[href="flags.html"]').trigger("click"); },
+			'show grid' : function() { $('nav a[href="grid.html"]').trigger("click"); },
+			'show tree view' : function() { $('nav a[href="treeview.html"]').trigger("click"); },
+			'show nestable lists' : function() { $('nav a[href="nestable-list.html"]').trigger("click"); },
+			'show jquery U I' : function() { $('nav a[href="jqui.html"]').trigger("click"); },
+			'show typography' : function() { $('nav a[href="typography.html"]').trigger("click"); },
+			'show calendar' : function() { $('nav a[href="calendar.html"]').trigger("click"); },
+			'show widgets' : function() { $('nav a[href="widgets.html"]').trigger("click"); },
+			'show gallery' : function() { $('nav a[href="gallery.html"]').trigger("click"); },
+			'show maps' : function() { $('nav a[href="gmap-xml.html"]').trigger("click"); },
+			'show pricing tables' : function() { $('nav a[href="pricing-table.html"]').trigger("click"); },
+			'show invoice' : function() { $('nav a[href="invoice.html"]').trigger("click"); },
+			'show search page' : function() { $('nav a[href="search.html"]').trigger("click"); },
 			'go back' :  function() { history.back(1); }, 
 			'scroll up' : function () { $('html, body').animate({ scrollTop: 0 }, 100); },
 			'scroll down' : function () { $('html, body').animate({ scrollTop: $(document).height() }, 100);},
@@ -263,6 +266,8 @@
 /*
  * END APP.CONFIG
  */
+
+ 
  
  
  

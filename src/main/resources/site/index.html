@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en-us" data-ng-app="smartApp">
+<html lang="en-us">
 	<head>
 		<meta charset="utf-8">
 		<!--<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
 
-		<title> $ title $ </title>
+		<title> $dashboard.title$ </title>
 		<meta name="description" content="">
 		<meta name="author" content="">
 
@@ -17,16 +17,6 @@
 		<!-- SmartAdmin Styles : Please note (smartadmin-production.css) was created using LESS variables -->
 		<link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-production.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-skins.min.css">
-
-		<!-- SmartAdmin RTL Support is under construction-->
-		<link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-rtl.min.css">
-
-		<!-- We recommend you use "your_style.css" to override SmartAdmin
-		     specific styles this will also ensure you retrain your customization with each SmartAdmin update.
-		<link rel="stylesheet" type="text/css" media="screen" href="css/your_style.css"> -->
-
-		<!-- Goes with demo.js, you can delete this css when designing your own WebApp -->
-		<link rel="stylesheet" type="text/css" media="screen" href="css/demo.min.css">
 
 		<!-- FAVICONS -->
 		<link rel="shortcut icon" href="img/favicon/favicon.ico" type="image/x-icon">
@@ -52,44 +42,112 @@
 		<link rel="apple-touch-startup-image" href="img/splash/iphone.png" media="screen and (max-device-width: 320px)">
 
 	</head>
-	<body class="smart-style-1 top-menu" data-ng-controller="SmartAppController">
-		<!-- POSSIBLE CLASSES: minified, fixed-ribbon, fixed-header, fixed-width, top-menu
-			 You can also add different skin classes such as "smart-skin-0", "smart-skin-1" etc...-->
+	<body class="">
+		<aside id="left-panel"></aside>
 
-		<!-- HEADER -->
-		<header id="header" data-ng-include="'includes/header.html'"></header>
-		<!-- END HEADER -->
-
-		<!-- Left panel : Navigation area -->
-		<!-- Note: This width of the aside area can be adjusted through LESS variables -->
-		<aside id="left-panel"><span data-ng-include="'includes/left-panel.html'"></span></aside>
-		<!-- END NAVIGATION -->
-
-		<!-- MAIN PANEL -->
 		<div id="main" role="main">
 
-			<!-- MAIN CONTENT -->
-			<div id="content" data-ng-view="" class="view-animate"></div>
-			<!-- END MAIN CONTENT -->
+			<div id="content">
+				<div class="row">
+					<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+						<h1 class="page-title txt-color-blueDark"><i class="fa fa-bar-chart-o fa-fw "></i> $dashboard.title$ </span></h1>
+					</div>
+					<div class="col-xs-12 col-sm-5 col-md-5 col-lg-8">
+						<ul id="sparks" class="">
+							<li class="sparks-info">
+								<h5>Jenkins Servers<span class="txt-color-blue">$dashboard.serverCount$</span></h5>
+								<div class="sparkline txt-color-blue hidden-mobile hidden-md hidden-sm">
+									$dashboard.sparklines.activity$
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
 
+				<!-- widget grid -->
+				<!--<section id="widget-grid" class="">-->
+
+
+				<div class="row">
+
+					<!-- NEW WIDGET START -->
+					<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+						<!-- Widget ID (each widget will need unique ID)-->
+						<div class="jarviswidget" id="wid-id-11" data-widget-editbutton="false">
+							<!-- widget options:
+                            usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                            data-widget-colorbutton="false"
+                            data-widget-editbutton="false"
+                            data-widget-togglebutton="false"
+                            data-widget-deletebutton="false"
+                            data-widget-fullscreenbutton="false"
+                            data-widget-custombutton="false"
+                            data-widget-collapsed="true"
+                            data-widget-sortable="false"
+
+                            -->
+							<header>
+								<span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
+								<h2>Build Activity</h2>
+
+							</header>
+
+							<!-- widget div-->
+							<div>
+
+								<!-- widget edit box -->
+								<div class="jarviswidget-editbox">
+									<!-- This area used as dropdown edit box -->
+
+								</div>
+								<!-- end widget edit box -->
+
+								<!-- widget content -->
+								<div class="widget-body no-padding">
+
+									<div id="build-activity-chart" class="chart no-padding"></div>
+
+								</div>
+								<!-- end widget content -->
+
+							</div>
+							<!-- end widget div -->
+
+						</div>
+						<!-- end widget -->
+
+					</article>
+					<!-- WIDGET END -->
+
+				</div>
+				<!--</section>-->
+
+			</div>
 		</div>
 		<!-- END MAIN PANEL -->
 
 		<!-- PAGE FOOTER -->
-		<div class="page-footer"><span data-ng-include="'includes/footer.html'"></span></div>
-		<!-- END FOOTER -->
+		<div class="page-footer">
+			<div class="row">
+				<div class="col-xs-12 col-sm-6">
+					<span class="txt-color-white">Kuona &copy; 2014</span>
+				</div>
 
-		<!-- SHORTCUT AREA : With large tiles (activated via clicking user name tag)
-		Note: These tiles are completely responsive,
-		you can add as many as you like
-		-->
-		<div id="shortcut"><span data-ng-include="'includes/shortcut.html'"></span></div>
-		<!-- END SHORTCUT AREA -->
+				<div class="col-xs-6 col-sm-6 text-right hidden-xs">
+					<div class="txt-color-white inline-block">
+						<i class="txt-color-blueLight hidden-mobile">Last updated <i class="fa fa-clock-o"></i> <strong>>$dashboard.lastUpdated$ &nbsp;</strong> </i>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- END PAGE FOOTER -->
 
 		<!--================================================== -->
 
-		<!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)
-		<script data-pace-options='{ "restartOnRequestAfter": true }' src="js/plugin/pace/pace.min.js"></script>-->
+		<!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)-->
+		<!--<script data-pace-options='{ "restartOnRequestAfter": true }' src="js/plugin/pace/pace.min.js"></script>-->
 
 		<!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
@@ -106,88 +164,41 @@
 			}
 		</script>
 
-		<!-- MAIN APP JS FILE -->
+		<!-- IMPORTANT: APP CONFIG -->
 		<script src="js/app.config.js"></script>
 
-		<!-- JS TOUCH : include this plugin for mobile drag / drop touch events-->
+
 		<script src="js/plugin/jquery-touch/jquery.ui.touch-punch.min.js"></script>
-
-		<!-- BOOTSTRAP JS -->
 		<script src="js/bootstrap/bootstrap.min.js"></script>
-
-		<!-- CUSTOM NOTIFICATION -->
 		<script src="js/notification/SmartNotification.min.js"></script>
-
-		<!-- JARVIS WIDGETS -->
 		<script src="js/smartwidgets/jarvis.widget.min.js"></script>
-
-		<!-- EASY PIE CHARTS -->
 		<script src="js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js"></script>
-
-		<!-- SPARKLINES -->
 		<script src="js/plugin/sparkline/jquery.sparkline.min.js"></script>
-
-		<!-- JQUERY VALIDATE -->
 		<script src="js/plugin/jquery-validate/jquery.validate.min.js"></script>
-
-		<!-- JQUERY MASKED INPUT -->
 		<script src="js/plugin/masked-input/jquery.maskedinput.min.js"></script>
-
-		<!-- JQUERY SELECT2 INPUT -->
 		<script src="js/plugin/select2/select2.min.js"></script>
-
-		<!-- JQUERY UI + Bootstrap Slider -->
 		<script src="js/plugin/bootstrap-slider/bootstrap-slider.min.js"></script>
 
-		<!-- browser msie issue fix -->
 		<script src="js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
 
-		<!-- FastClick: For mobile devices: you can disable this in app.js -->
 		<script src="js/plugin/fastclick/fastclick.min.js"></script>
 
 		<!--[if IE 8]>
-			<h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>
+
+		<h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>
+
 		<![endif]-->
 
-		<!-- AngularJS -->
-		<script src="js/libs/angular/angular.js"></script>
-	  	<script src="js/libs/angular/angular-route.js"></script>
-	  	<script src="js/libs/angular/angular-animate.js"></script>
-	  	<script src="js/libs/angular/ui-bootstrap-custom-tpls-0.11.0.js"></script>
+		<!-- Demo purpose only -->
+		<script src="js/demo.js"></script>
 
-		<!-- ANGULAR: Handled via "ribbon" directive
-		<script src="js/demo.js"></script>-->
-
-		<!-- MAIN APP JS FILE -->
 		<script src="js/app.js"></script>
 
-		<!-- MAIN ANGULAR JS FILE -->
-	  	<script src="js/ng/ng.app.js"></script>
-	  	<script src="js/ng/ng.controllers.js"></script>
-	  	<script src="js/ng/ng.directives.js"></script>
+		<script src="js/plugin/morris/raphael.min.js"></script>
+		<script src="js/plugin/morris/morris.js"></script>
 
-	  	<!-- PLUNKER -->
-	  	<script src="js/ng/plunker.js"></script>
-
-		<!-- ENHANCEMENT PLUGINS : NOT A REQUIREMENT -->
-		<!-- Voice command : plugin -->
-		<script src="js/speech/voicecommand.min.js"></script>
-
-		<!-- Your GOOGLE ANALYTICS CODE Below -->
-		<script type="text/javascript">
-
-		  var _gaq = _gaq || [];
-		  _gaq.push(['_setAccount', 'UA-XXXXXXXX-X']);
-		  _gaq.push(['_trackPageview']);
-
-		  (function() {
-		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		  })();
-
-		</script>
-
+		<script src="activity-chart.js"></script>
+	<script>pageSetUp();</script>
 	</body>
 
 </html>

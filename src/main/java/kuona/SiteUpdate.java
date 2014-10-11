@@ -4,8 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.JobWithDetails;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STRawGroupDir;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -116,6 +120,36 @@ public class SiteUpdate {
 
 
             dashboard.put("sparklines", sparklines);
+
+            String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+            ArrayList dayData = new ArrayList() {
+                {
+                    activity.keySet().stream().forEach(year -> {
+                        for ( int i = 0; i < months.length; i++) {
+                            final int index = i;
+                            add(new HashMap<String, Object>() {{
+                                put("elapsed", months[index] +" "+ year);
+                                put("value", activity.get(year)[index]);
+                            }});
+                        }
+                    });
+                }
+            };
+
+            STGroup g = new STRawGroupDir("templates/project/");
+
+            puts("Reading a text file template file from the classpath");
+            ST st = g.getInstanceOf("activity-chart.js");
+            st.add("buildcounts", dayData);
+
+            String activityChartFilepath = sitePath + File.separatorChar + "activity-chart.js";
+            puts("Updating activitiy chart data " + activityChartFilepath);
+
+            FileWriter activityChartFile = new FileWriter(activityChartFilepath);
+            activityChartFile.write(st.render());
+            activityChartFile.close();
+
             Map trend = new HashMap<String, Object>() {{
                 put("trend", "up");
                 put("delta", 10);
@@ -125,7 +159,7 @@ public class SiteUpdate {
 
             String dashboardFilepath = sitePath + File.separatorChar + "dashboard.json";
             puts("Updating dashboard data " + dashboardFilepath);
-            mapper.writeValue(new File(dashboardFilepath), dashboard);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(dashboardFilepath), dashboard);
 
 
         } catch (Exception e) {
