@@ -48,167 +48,226 @@
 <aside id="left-panel"></aside>
 
 <div id="main" role="main">
-    <div id="content">
-        <div class="row">
-            <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-                <h1 class="page-title txt-color-blueDark"><i class="fa fa fa-tachometer fa-fw "></i>
-                    $dashboard.title$ </span></h1>
-            </div>
-            <div class="col-xs-12 col-sm-5 col-md-5 col-lg-8">
-                <ul id="sparks" class="">
-                    <li class="sparks-info">
-                        <h5>Jenkins Servers<span class="txt-color-blue">$dashboard.serverCount$</span></h5>
-
-                        <div class="sparkline txt-color-blue hidden-mobile hidden-md hidden-sm">
-                            $dashboard.sparklines.activity$
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="jarviswidget" id="wid-id-11" data-widget-editbutton="false">
-                    <header>
-                        <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
-
-                        <h2>Build Activity: Last 12 Months</h2>
-
-                    </header>
-
-                    <div>
-                        <div class="jarviswidget-editbox">
-                        </div>
-                        <div class="widget-body no-padding">
-
-                            <div id="build-activity-chart" class="chart no-padding"></div>
-
-                        </div>
-                    </div>
-                </div>
-            </article>
-        </div>
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="jarviswidget" id="wid-id-10" data-widget-editbutton="false">
-                    <header>
-                        <span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
-
-                        <h2>Servers</h2>
-                    </header>
-                    <div>
-                        <div class="dd" id="nestable">
-                            <ol class="dd-list">
-                                $dashboard.servers: {server |
-                                <li class="dd-item" data-id="1">
-                                    <div class="dd-handle">$server.name$ <span>- $server.description$</span>
-                                        <a href="$server.uri$">$server.uri$</a>
-                                        <i class="fa fa-cogs"></i> Jobs: $server.jobs$ <i class="fa fa-cog"></i> Builds:
-                                        $server.builds$
-                                        <img src="img/jenkins/logo/24x24/logo.png" class="pull-right">
-                                    </div>
-                                </li>
-                                }$
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        </div>
-
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="jarviswidget jarviswidget-sortable" id="wid-id-6" data-widget-editbutton="false"
-                     role="widget" style="">
-                    <!-- widget options:
-                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
-
-                    data-widget-colorbutton="false"
-                    data-widget-editbutton="false"
-                    data-widget-togglebutton="false"
-                    data-widget-deletebutton="false"
-                    data-widget-fullscreenbutton="false"
-                    data-widget-custombutton="false"
-                    data-widget-collapsed="true"
-                    data-widget-sortable="false"
-
-                    -->
-                    <header role="heading">
-                        <span class="widget-icon"> <i class="fa fa-check-circle-o"></i> </span>
-                        <h2>Builds by result</h2>
-                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
-
-                    <!-- widget div-->
-                    <div role="content">
-
-                        <!-- widget edit box -->
-                        <div class="jarviswidget-editbox">
-                            <!-- This area used as dropdown edit box -->
-
-                        </div>
-                        <!-- end widget edit box -->
-
-                        <!-- widget content -->
-                        <div class="widget-body no-padding">
-
-                            <div id="builds-by-result" class="chart no-padding">
-                                <svg height="220" version="1.1" width="1126" xmlns="http://www.w3.org/2000/svg"
-                                     style="overflow: hidden; position: relative;">
-                                    <desc>Created with Raphaël 2.1.2</desc>
-                                    <defs></defs>
-                                    <path fill="none" stroke="#57889c"
-                                          d="M563,176.66666666666669A66.66666666666667,66.66666666666667,0,1,0,502.9522023010087,81.03957120577358"
-                                          stroke-width="2" opacity="1" style="opacity: 1;"></path>
-                                    <path fill="#57889c" stroke="#ffffff"
-                                          d="M563,179.66666666666669A69.66666666666667,69.66666666666667,0,1,0,500.2500514045541,79.73635191003339L472.92830345151305,66.55935680866037A100,100,0,1,1,563,210Z"
-                                          stroke-width="3" style=""></path>
-                                    <path fill="none" stroke="#3980b5"
-                                          d="M502.9522023010087,81.03957120577358A66.66666666666667,66.66666666666667,0,0,0,505.24673905302427,143.30173110267648"
-                                          stroke-width="2" opacity="0" style="opacity: 0;"></path>
-                                    <path fill="#3980b5" stroke="#ffffff"
-                                          d="M500.2500514045541,79.73635191003339A69.66666666666667,69.66666666666667,0,0,0,502.64784231041034,144.80030900229693L480.70160315055955,157.45496682131397A95,95,0,0,1,477.4318882789374,68.73138896822735Z"
-                                          stroke-width="3" style=""></path>
-                                    <path fill="none" stroke="#679dc6"
-                                          d="M505.24673905302427,143.30173110267648A66.66666666666667,66.66666666666667,0,0,0,538.615474901629,172.04707390499055"
-                                          stroke-width="2" opacity="0" style="opacity: 0;"></path>
-                                    <path fill="#679dc6" stroke="#ffffff"
-                                          d="M502.64784231041034,144.80030900229693A69.66666666666667,69.66666666666667,0,0,0,537.5181712722023,174.83919223071513L528.2520517348213,198.41708031461155A95,95,0,0,1,480.70160315055955,157.45496682131397Z"
-                                          stroke-width="3" style=""></path>
-                                    <path fill="none" stroke="#95bbd7"
-                                          d="M538.615474901629,172.04707390499055A66.66666666666667,66.66666666666667,0,0,0,562.9790560493207,176.66666337679857"
-                                          stroke-width="2" opacity="0" style="opacity: 0;"></path>
-                                    <path fill="#95bbd7" stroke="#ffffff"
-                                          d="M537.5181712722023,174.83919223071513A69.66666666666667,69.66666666666667,0,0,0,562.9781135715401,179.6666632287545L562.9701548702819,204.99999531193794A95,95,0,0,1,528.2520517348213,198.41708031461155Z"
-                                          stroke-width="3" style=""></path>
-                                    <text x="563" y="100" text-anchor="middle" font="10px &quot;Arial&quot;"
-                                          stroke="none" fill="#000000"
-                                          style="text-anchor: middle; font-style: normal; font-variant: normal; font-weight: 800; font-size: 15px; line-height: normal; font-family: Arial;"
-                                          font-size="15px" font-weight="800"
-                                          transform="matrix(1.9863,0,0,1.9863,-555.3116,-106.9413)"
-                                          stroke-width="0.5034375">
-                                        <tspan dy="5.234375">foo</tspan>
-                                    </text>
-                                    <text x="563" y="120" text-anchor="middle" font="10px &quot;Arial&quot;"
-                                          stroke="none" fill="#000000"
-                                          style="text-anchor: middle; font-style: normal; font-variant: normal; font-weight: normal; font-size: 14px; line-height: normal; font-family: Arial;"
-                                          font-size="14px" transform="matrix(1.4194,0,0,1.4194,-236.1129,-47.0561)"
-                                          stroke-width="0.7045312499999999">
-                                        <tspan dy="4.8828125">70%</tspan>
-                                    </text>
-                                </svg>
-                            </div>
-
-                        </div>
-                        <!-- end widget content -->
-
-                    </div>
-                    <!-- end widget div -->
-
-                </div>
-            </article>
-        </div>
+<div id="content">
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark"><i class="fa fa fa-tachometer fa-fw "></i>
+            $dashboard.title$ </span></h1>
     </div>
+    <div class="col-xs-12 col-sm-5 col-md-5 col-lg-8">
+        <ul id="sparks" class="">
+            <li class="sparks-info">
+                <h5>Jenkins Servers<span class="txt-color-blue">$dashboard.serverCount$</span></h5>
+
+                <div class="sparkline txt-color-blue hidden-mobile hidden-md hidden-sm">
+                    $dashboard.sparklines.activity$
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="jarviswidget" id="wid-id-11" data-widget-editbutton="false">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
+
+                <h2>Build Activity: Last 12 Months</h2>
+
+            </header>
+
+            <div>
+                <div class="jarviswidget-editbox">
+                </div>
+                <div class="widget-body no-padding">
+
+                    <div id="build-activity-chart" class="chart no-padding"></div>
+
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+
+
+<div class="row">
+    <article class="col-xs-12 col-sm-6 col-md-6 col-lg-6 sortable-grid ui-sortable">
+        <!--<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">-->
+        <div class="jarviswidget jarviswidget-sortable" id="wid-id-6" data-widget-editbutton="false"
+             role="widget" style="">
+            <!-- widget options:
+            usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+            data-widget-colorbutton="false"
+            data-widget-editbutton="false"
+            data-widget-togglebutton="false"
+            data-widget-deletebutton="false"
+            data-widget-fullscreenbutton="false"
+            data-widget-custombutton="false"
+            data-widget-collapsed="true"
+            data-widget-sortable="false"
+
+            -->
+            <header role="heading">
+                <span class="widget-icon"> <i class="fa fa-check-circle-o"></i> </span>
+
+                <h2>Builds by result</h2>
+                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+
+            <!-- widget div-->
+            <div role="content">
+
+                <!-- widget edit box -->
+                <div class="jarviswidget-editbox">
+                    <!-- This area used as dropdown edit box -->
+
+                </div>
+                <!-- end widget edit box -->
+
+                <!-- widget content -->
+                <div class="widget-body no-padding">
+
+                    <div id="builds-by-result" class="chart no-padding">
+                        <svg height="220" version="1.1" width="1126" xmlns="http://www.w3.org/2000/svg"
+                             style="overflow: hidden; position: relative;">
+                            <desc>Created with Raphaël 2.1.2</desc>
+                            <defs></defs>
+                            <path fill="none" stroke="#57889c"
+                                  d="M563,176.66666666666669A66.66666666666667,66.66666666666667,0,1,0,502.9522023010087,81.03957120577358"
+                                  stroke-width="2" opacity="1" style="opacity: 1;"></path>
+                            <path fill="#57889c" stroke="#ffffff"
+                                  d="M563,179.66666666666669A69.66666666666667,69.66666666666667,0,1,0,500.2500514045541,79.73635191003339L472.92830345151305,66.55935680866037A100,100,0,1,1,563,210Z"
+                                  stroke-width="3" style=""></path>
+                            <path fill="none" stroke="#3980b5"
+                                  d="M502.9522023010087,81.03957120577358A66.66666666666667,66.66666666666667,0,0,0,505.24673905302427,143.30173110267648"
+                                  stroke-width="2" opacity="0" style="opacity: 0;"></path>
+                            <path fill="#3980b5" stroke="#ffffff"
+                                  d="M500.2500514045541,79.73635191003339A69.66666666666667,69.66666666666667,0,0,0,502.64784231041034,144.80030900229693L480.70160315055955,157.45496682131397A95,95,0,0,1,477.4318882789374,68.73138896822735Z"
+                                  stroke-width="3" style=""></path>
+                            <path fill="none" stroke="#679dc6"
+                                  d="M505.24673905302427,143.30173110267648A66.66666666666667,66.66666666666667,0,0,0,538.615474901629,172.04707390499055"
+                                  stroke-width="2" opacity="0" style="opacity: 0;"></path>
+                            <path fill="#679dc6" stroke="#ffffff"
+                                  d="M502.64784231041034,144.80030900229693A69.66666666666667,69.66666666666667,0,0,0,537.5181712722023,174.83919223071513L528.2520517348213,198.41708031461155A95,95,0,0,1,480.70160315055955,157.45496682131397Z"
+                                  stroke-width="3" style=""></path>
+                            <path fill="none" stroke="#95bbd7"
+                                  d="M538.615474901629,172.04707390499055A66.66666666666667,66.66666666666667,0,0,0,562.9790560493207,176.66666337679857"
+                                  stroke-width="2" opacity="0" style="opacity: 0;"></path>
+                            <path fill="#95bbd7" stroke="#ffffff"
+                                  d="M537.5181712722023,174.83919223071513A69.66666666666667,69.66666666666667,0,0,0,562.9781135715401,179.6666632287545L562.9701548702819,204.99999531193794A95,95,0,0,1,528.2520517348213,198.41708031461155Z"
+                                  stroke-width="3" style=""></path>
+                            <text x="563" y="100" text-anchor="middle" font="10px &quot;Arial&quot;"
+                                  stroke="none" fill="#000000"
+                                  style="text-anchor: middle; font-style: normal; font-variant: normal; font-weight: 800; font-size: 15px; line-height: normal; font-family: Arial;"
+                                  font-size="15px" font-weight="800"
+                                  transform="matrix(1.9863,0,0,1.9863,-555.3116,-106.9413)"
+                                  stroke-width="0.5034375">
+                                <tspan dy="5.234375">foo</tspan>
+                            </text>
+                            <text x="563" y="120" text-anchor="middle" font="10px &quot;Arial&quot;"
+                                  stroke="none" fill="#000000"
+                                  style="text-anchor: middle; font-style: normal; font-variant: normal; font-weight: normal; font-size: 14px; line-height: normal; font-family: Arial;"
+                                  font-size="14px" transform="matrix(1.4194,0,0,1.4194,-236.1129,-47.0561)"
+                                  stroke-width="0.7045312499999999">
+                                <tspan dy="4.8828125">70%</tspan>
+                            </text>
+                        </svg>
+                    </div>
+
+                </div>
+                <!-- end widget content -->
+
+            </div>
+            <!-- end widget div -->
+
+        </div>
+    </article>
+    <!--</div>-->
+
+    <!--<div class="row">-->
+    <article class="col-xs-12 col-sm-6 col-md-6 col-lg-6 sortable-grid ui-sortable">
+
+        <div class="jarviswidget" id="wid-id-3" data-widget-editbutton="false">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
+
+                <h2>Builds by duration</h2>
+            </header>
+            <div>
+                <div class="jarviswidget-editbox">
+
+                </div>
+                <div class="widget-body no-padding">
+
+                    <div id="builds-by-duration" class="chart no-padding"></div>
+
+                </div>
+            </div>
+
+        </div>
+    </article>
+</div>
+<div class="row">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="jarviswidget" id="wid-id-10" data-widget-editbutton="false">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
+
+                <h2>Servers</h2>
+            </header>
+            <div>
+                $dashboard.servers: {server |
+                <div class="col-md-6">
+                    <p>
+                        Add any of the below mentioned modifier classes to change the appearance of a badge.
+                    </p>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th style="width:50%">Server: $if(server.name)$ server.name $else$ Unamed $endif$</th>
+                            <th style="width:50%">$server.description$</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Build server type</td>
+                            <td><span class="badge"><img src="img/jenkins/logo/32x32/logo.png"
+                                                         class="pull-right"></span></td>
+                        </tr>
+                        <tr>
+                            <td><h5>Server</h5>
+                            </td>
+                            <td><a href="$server.uri$">$server.uri$</a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h5>Jobs</h5>
+
+                                <p class="font-xs">Number of defined jobs including active and inactive</p>
+                            </td>
+                            <td><span class="badge bg-color-blue">$server.jobs$</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h5>Builds</h5>
+
+                                <p class="font-xs">Total number of builds known to have been executed.</p>
+
+                                <p class="font-xs">If a build has been deleted on the build server before it has been
+                                    collected for analysis then will not appear in this count.</p>
+                            </td>
+                            <td><span class="badge bg-color-blue">$server.builds$</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                }$
+            </div>
+        </div>
+    </article>
+</div>
+</div>
 </div>
 <!-- END MAIN PANEL -->
 
@@ -285,6 +344,7 @@
 
 <script src="activity-chart.js"></script>
 <script src="builds-by-result-chart.js"></script>
+<script src="builds-by-duration.js"></script>
 <script>pageSetUp();</script>
 </body>
 
