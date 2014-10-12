@@ -115,6 +115,7 @@
 
             <lib>
                 <fileset dir="lib" includes="*.jar"/>
+                <fileset dir="src/main/resources"/>
             </lib>
         </one-jar>
     </target>

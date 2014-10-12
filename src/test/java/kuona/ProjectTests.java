@@ -1,5 +1,6 @@
 package kuona;
 
+import kuona.model.Project;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 

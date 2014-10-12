@@ -1,6 +1,8 @@
 package kuona;
 
-import com.offbytwo.jenkins.JenkinsServer;
+import kuona.config.ApplicationConfiguration;
+import kuona.config.ApplicationConfigurationReader;
+import kuona.server.JenkinsServer;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 

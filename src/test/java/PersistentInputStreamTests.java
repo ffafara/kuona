@@ -1,4 +1,4 @@
-import kuona.PersistentInputStream;
+import kuona.utils.PersistentInputStream;
 import org.junit.Test;
 
 import java.io.*;

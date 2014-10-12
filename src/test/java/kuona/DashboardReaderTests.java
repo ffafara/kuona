@@ -1,5 +1,8 @@
 package kuona;
 
+import kuona.model.DashboardModel;
+import kuona.model.ServerEntry;
+import kuona.utils.DashboardReader;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;

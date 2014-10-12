@@ -1,9 +1,6 @@
 package kuona;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 
@@ -20,19 +17,6 @@ public class TemplateTests {
         template.add("message", "Graham was here");
 
         assertThat(template.render(), is("Graham was here"));
-    }
-
-    @Test
-    @Ignore
-    public void handleJsonData() throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree("{ \"value\": \"foobar\"}");
-
-        ST template = new ST("<dashboard.map.(value)>");
-        template.add("dashboard", node);
-
-        assertThat(template.render(), is("foobar"));
-
     }
 
     @Test

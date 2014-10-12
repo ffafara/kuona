@@ -857,7 +857,7 @@ function runAllForms() {
             $this.datepicker({
                 dateFormat: dataDateFormat,
                 prevText: '<i class="fa fa-chevron-left"></i>',
-                nextText: '<i class="fa fa-chevron-right"></i>',
+                nextText: '<i class="fa fa-chevron-right"></i>'
             });
 
             //clear memory reference
