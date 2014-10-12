@@ -101,9 +101,9 @@
 							<ol class="dd-list">
 								$dashboard.servers: {server |
 								<li class="dd-item" data-id="1">
-									<div class="dd-handle">
-										$server.name$ <span>- $server.description$</span>
+									<div class="dd-handle">$server.name$ <span>- $server.description$</span>
 										<a href="$server.uri$">$server.uri$</a>
+                                        <i class="fa fa-cogs"></i> Jobs: $server.jobs$ <i class="fa fa-cog"></i> Builds: $server.builds$
 										<img src="img/jenkins/logo/24x24/logo.png" class="pull-right">
 									</div>
 								</li>

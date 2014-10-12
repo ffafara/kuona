@@ -37,5 +37,8 @@ public class DashboardModel {
     public List<ServerEntry> getServers() {
         return servers;
     }
-    public int getServerCount() { return servers.size();}
+
+    public int getServerCount() {
+        return servers.size();
+    }
 }

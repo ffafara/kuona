@@ -9,6 +9,7 @@ package com.offbytwo.jenkins.model;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JobWithDetails extends Job {
@@ -35,6 +36,8 @@ public class JobWithDetails extends Job {
     }
 
     public List<Build> getBuilds() {
+        if (builds == null)
+            return new ArrayList<>();
         return Lists.transform(builds, this::buildWithClient);
     }
 
