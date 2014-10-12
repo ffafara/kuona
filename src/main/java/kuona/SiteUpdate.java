@@ -5,6 +5,7 @@ import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import com.offbytwo.jenkins.model.MainView;
+import org.joda.time.DateTime;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STRawGroupDir;
@@ -153,15 +154,21 @@ public class SiteUpdate {
     private ArrayList dayData(final Map<Integer, int[]> activity) {
         String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
+        DateTime startDate = new DateTime().minusYears(1);
+
         return new ArrayList() {
             {
                 activity.keySet().stream().forEach(year -> {
                     for (int i = 0; i < months.length; i++) {
                         final int index = i;
-                        add(new HashMap<String, Object>() {{
-                            put("elapsed", months[index] + " " + year);
-                            put("value", activity.get(year)[index]);
-                        }});
+                        DateTime eventDate = new DateTime(year, index+1, 1, 0,0);
+
+                        if (eventDate.isAfter(startDate) && eventDate.isBeforeNow()) {
+                            add(new HashMap<String, Object>() {{
+                                put("elapsed", months[index] + " " + year);
+                                put("value", activity.get(year)[index]);
+                            }});
+                        }
                     }
                 });
             }
