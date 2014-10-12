@@ -214,14 +214,11 @@
             <header>
                 <span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
 
-                <h2>Servers</h2>
+                <h2>CI Servers</h2>
             </header>
             <div>
                 $dashboard.servers: {server |
                 <div class="col-md-6">
-                    <p>
-                        Add any of the below mentioned modifier classes to change the appearance of a badge.
-                    </p>
                     <table class="table table-bordered">
                         <thead>
                         <tr>
@@ -231,31 +228,40 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td>Build server type</td>
+                            <td>
+                                <dl>
+                                    <dt>Build server type</dt>
+                                </dl>
+                            </td>
                             <td><span class="badge"><img src="img/jenkins/logo/32x32/logo.png"
                                                          class="pull-right"></span></td>
                         </tr>
                         <tr>
-                            <td><h5>Server</h5>
+                            <td>
+                                <dl>
+                                    <dt>Server</dt>
+                                </dl>
                             </td>
                             <td><a href="$server.uri$">$server.uri$</a></td>
                         </tr>
                         <tr>
                             <td>
-                                <h5>Jobs</h5>
-
-                                <p class="font-xs">Number of defined jobs including active and inactive</p>
+                                <dl>
+                                    <dt>Jobs</dt>
+                                    <dl>Number of defined jobs including active and inactive</dl>
+                                </dl>
                             </td>
                             <td><span class="badge bg-color-blue">$server.jobs$</span></td>
                         </tr>
                         <tr>
                             <td>
-                                <h5>Builds</h5>
-
-                                <p class="font-xs">Total number of builds known to have been executed.</p>
-
-                                <p class="font-xs">If a build has been deleted on the build server before it has been
-                                    collected for analysis then will not appear in this count.</p>
+                                <dl>
+                                    <dt>Builds</dt>
+                                    <dd>Total number of builds known to have been executed.</dd>
+                                    <dd>If a build has been deleted on the build server before it has been
+                                        collected for analysis then will not appear in this count.
+                                    </dd>
+                                </dl>
                             </td>
                             <td><span class="badge bg-color-blue">$server.builds$</span></td>
                         </tr>
