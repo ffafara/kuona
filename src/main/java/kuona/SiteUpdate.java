@@ -84,7 +84,11 @@ public class SiteUpdate {
                                     int[] yearMap = activity.get(year);
                                     yearMap[buildDate.getMonth()] += 1;
 
-                                    buildCountsByResult.put(details.getResult(), buildCountsByResult.get(details.getResult()) + 1);
+                                    if (details.getResult() == null) {
+                                        buildCountsByResult.put(BuildResult.UNKNOWN, buildCountsByResult.get(BuildResult.UNKNOWN) + 1);
+                                    } else {
+                                        buildCountsByResult.put(details.getResult(), buildCountsByResult.get(details.getResult()) + 1);
+                                    }
 
                                     byDuration.collect(details.getDuration());
 //                                    puts(job.getDisplayName() + " - " + buildDate);
@@ -207,6 +211,7 @@ public class SiteUpdate {
         activityChartFile.write(st.render());
         activityChartFile.close();
     }
+
     private void writeBuildsByDuration(String sitePath, ByDuration byDuration) throws IOException {
         STGroup g = new STRawGroupDir("templates/project/");
 
@@ -224,11 +229,13 @@ public class SiteUpdate {
     private void writeBuildsByResult(String sitePath, Map<BuildResult, Integer> buildCountsByResult) {
         try {
             int count = 0;
-            for (int i : buildCountsByResult.values()) {count += i;}
+            for (int i : buildCountsByResult.values()) {
+                count += i;
+            }
 
             Map<BuildResult, Double> buildPercentagesByResult = new HashMap<>();
             final int c = count;
-            buildCountsByResult.keySet().stream().forEach(result ->{
+            buildCountsByResult.keySet().stream().forEach(result -> {
                 buildPercentagesByResult.put(result, (buildCountsByResult.get(result) * 100.0) / c);
             });
 
