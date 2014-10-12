@@ -3,7 +3,7 @@ if ($('#build-activity-chart').length) {
        <buildcounts: {bc | { elapsed: "<bc.("elapsed")>", value: <bc.("value")> \}} ;separator=",\n">
     ];
 
-    Morris.Line({
+    Morris.Bar({
         element : 'build-activity-chart',
         data : day_data,
         xkey : 'elapsed',
