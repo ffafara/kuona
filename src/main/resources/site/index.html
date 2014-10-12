@@ -89,33 +89,126 @@
                 </div>
             </article>
         </div>
-		<div class="row">
-			<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-				<div class="jarviswidget" id="wid-id-10" data-widget-editbutton="false">
-					<header>
-						<span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
-						<h2>Servers</h2>
-					</header>
-					<div>
-						<div class="dd" id="nestable">
-							<ol class="dd-list">
-								$dashboard.servers: {server |
-								<li class="dd-item" data-id="1">
-									<div class="dd-handle">$server.name$ <span>- $server.description$</span>
-										<a href="$server.uri$">$server.uri$</a>
-                                        <i class="fa fa-cogs"></i> Jobs: $server.jobs$ <i class="fa fa-cog"></i> Builds: $server.builds$
-										<img src="img/jenkins/logo/24x24/logo.png" class="pull-right">
-									</div>
-								</li>
-								}$
-							</ol>
-						</div>
-					</div>
-				</div>
-			</article>
-		</div>
+        <div class="row">
+            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="jarviswidget" id="wid-id-10" data-widget-editbutton="false">
+                    <header>
+                        <span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
 
-	</div>
+                        <h2>Servers</h2>
+                    </header>
+                    <div>
+                        <div class="dd" id="nestable">
+                            <ol class="dd-list">
+                                $dashboard.servers: {server |
+                                <li class="dd-item" data-id="1">
+                                    <div class="dd-handle">$server.name$ <span>- $server.description$</span>
+                                        <a href="$server.uri$">$server.uri$</a>
+                                        <i class="fa fa-cogs"></i> Jobs: $server.jobs$ <i class="fa fa-cog"></i> Builds:
+                                        $server.builds$
+                                        <img src="img/jenkins/logo/24x24/logo.png" class="pull-right">
+                                    </div>
+                                </li>
+                                }$
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="row">
+            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="jarviswidget jarviswidget-sortable" id="wid-id-6" data-widget-editbutton="false"
+                     role="widget" style="">
+                    <!-- widget options:
+                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                    data-widget-colorbutton="false"
+                    data-widget-editbutton="false"
+                    data-widget-togglebutton="false"
+                    data-widget-deletebutton="false"
+                    data-widget-fullscreenbutton="false"
+                    data-widget-custombutton="false"
+                    data-widget-collapsed="true"
+                    data-widget-sortable="false"
+
+                    -->
+                    <header role="heading">
+                        <span class="widget-icon"> <i class="fa fa-check-circle-o"></i> </span>
+                        <h2>Builds by result</h2>
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+
+                    <!-- widget div-->
+                    <div role="content">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+
+                        <!-- widget content -->
+                        <div class="widget-body no-padding">
+
+                            <div id="builds-by-result" class="chart no-padding">
+                                <svg height="220" version="1.1" width="1126" xmlns="http://www.w3.org/2000/svg"
+                                     style="overflow: hidden; position: relative;">
+                                    <desc>Created with Raphaël 2.1.2</desc>
+                                    <defs></defs>
+                                    <path fill="none" stroke="#57889c"
+                                          d="M563,176.66666666666669A66.66666666666667,66.66666666666667,0,1,0,502.9522023010087,81.03957120577358"
+                                          stroke-width="2" opacity="1" style="opacity: 1;"></path>
+                                    <path fill="#57889c" stroke="#ffffff"
+                                          d="M563,179.66666666666669A69.66666666666667,69.66666666666667,0,1,0,500.2500514045541,79.73635191003339L472.92830345151305,66.55935680866037A100,100,0,1,1,563,210Z"
+                                          stroke-width="3" style=""></path>
+                                    <path fill="none" stroke="#3980b5"
+                                          d="M502.9522023010087,81.03957120577358A66.66666666666667,66.66666666666667,0,0,0,505.24673905302427,143.30173110267648"
+                                          stroke-width="2" opacity="0" style="opacity: 0;"></path>
+                                    <path fill="#3980b5" stroke="#ffffff"
+                                          d="M500.2500514045541,79.73635191003339A69.66666666666667,69.66666666666667,0,0,0,502.64784231041034,144.80030900229693L480.70160315055955,157.45496682131397A95,95,0,0,1,477.4318882789374,68.73138896822735Z"
+                                          stroke-width="3" style=""></path>
+                                    <path fill="none" stroke="#679dc6"
+                                          d="M505.24673905302427,143.30173110267648A66.66666666666667,66.66666666666667,0,0,0,538.615474901629,172.04707390499055"
+                                          stroke-width="2" opacity="0" style="opacity: 0;"></path>
+                                    <path fill="#679dc6" stroke="#ffffff"
+                                          d="M502.64784231041034,144.80030900229693A69.66666666666667,69.66666666666667,0,0,0,537.5181712722023,174.83919223071513L528.2520517348213,198.41708031461155A95,95,0,0,1,480.70160315055955,157.45496682131397Z"
+                                          stroke-width="3" style=""></path>
+                                    <path fill="none" stroke="#95bbd7"
+                                          d="M538.615474901629,172.04707390499055A66.66666666666667,66.66666666666667,0,0,0,562.9790560493207,176.66666337679857"
+                                          stroke-width="2" opacity="0" style="opacity: 0;"></path>
+                                    <path fill="#95bbd7" stroke="#ffffff"
+                                          d="M537.5181712722023,174.83919223071513A69.66666666666667,69.66666666666667,0,0,0,562.9781135715401,179.6666632287545L562.9701548702819,204.99999531193794A95,95,0,0,1,528.2520517348213,198.41708031461155Z"
+                                          stroke-width="3" style=""></path>
+                                    <text x="563" y="100" text-anchor="middle" font="10px &quot;Arial&quot;"
+                                          stroke="none" fill="#000000"
+                                          style="text-anchor: middle; font-style: normal; font-variant: normal; font-weight: 800; font-size: 15px; line-height: normal; font-family: Arial;"
+                                          font-size="15px" font-weight="800"
+                                          transform="matrix(1.9863,0,0,1.9863,-555.3116,-106.9413)"
+                                          stroke-width="0.5034375">
+                                        <tspan dy="5.234375">foo</tspan>
+                                    </text>
+                                    <text x="563" y="120" text-anchor="middle" font="10px &quot;Arial&quot;"
+                                          stroke="none" fill="#000000"
+                                          style="text-anchor: middle; font-style: normal; font-variant: normal; font-weight: normal; font-size: 14px; line-height: normal; font-family: Arial;"
+                                          font-size="14px" transform="matrix(1.4194,0,0,1.4194,-236.1129,-47.0561)"
+                                          stroke-width="0.7045312499999999">
+                                        <tspan dy="4.8828125">70%</tspan>
+                                    </text>
+                                </svg>
+                            </div>
+
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+
+                </div>
+            </article>
+        </div>
+    </div>
 </div>
 <!-- END MAIN PANEL -->
 
@@ -186,10 +279,12 @@
 
 <script src="js/app.js"></script>
 
+
 <script src="js/plugin/morris/raphael.min.js"></script>
 <script src="js/plugin/morris/morris.js"></script>
 
 <script src="activity-chart.js"></script>
+<script src="builds-by-result-chart.js"></script>
 <script>pageSetUp();</script>
 </body>
 

@@ -2,6 +2,7 @@ package kuona;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.BuildResult;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import com.offbytwo.jenkins.model.MainView;
@@ -14,13 +15,19 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static kuona.utils.Utils.puts;
 
 public class SiteUpdate {
 
+    public static final String BUILDS_BY_RESULT_CHART_JS_FILENAME = "builds-by-result-chart.js";
     private final ApplicationConfiguration config;
 
     public SiteUpdate(ApplicationConfiguration config) {
@@ -38,6 +45,11 @@ public class SiteUpdate {
             List<Map> dashboardServers = new ArrayList<>();
 
             Map<Integer, int[]> activity = new HashMap<>();
+
+            Map<BuildResult, Integer> buildCountsByResult = new HashMap<>();
+            for (BuildResult br : BuildResult.values()) {
+                buildCountsByResult.put(br, 0);
+            }
 
             config.servers().stream().forEach(jenkins -> {
                 try {
@@ -70,6 +82,7 @@ public class SiteUpdate {
                                     int[] yearMap = activity.get(year);
                                     yearMap[buildDate.getMonth()] += 1;
 
+                                    buildCountsByResult.put(details.getResult(), buildCountsByResult.get(details.getResult()) + 1);
 //                                    puts(job.getDisplayName() + " - " + buildDate);
                                     completedBuilds.add(details);
                                 } catch (IOException e) {
@@ -108,7 +121,7 @@ public class SiteUpdate {
             ArrayList dayData = dayData(activity);
 
             writeActivityChartFile(sitePath, dayData);
-
+            writeBuildsByResult(sitePath, buildCountsByResult);
             Map trend = new HashMap<String, Object>() {{
                 put("trend", "up");
                 put("delta", 10);
@@ -161,7 +174,7 @@ public class SiteUpdate {
                 activity.keySet().stream().forEach(year -> {
                     for (int i = 0; i < months.length; i++) {
                         final int index = i;
-                        DateTime eventDate = new DateTime(year, index+1, 1, 0,0);
+                        DateTime eventDate = new DateTime(year, index + 1, 1, 0, 0);
 
                         if (eventDate.isAfter(startDate) && eventDate.isBeforeNow()) {
                             add(new HashMap<String, Object>() {{
@@ -178,7 +191,6 @@ public class SiteUpdate {
     private void writeActivityChartFile(String sitePath, ArrayList dayData) throws IOException {
         STGroup g = new STRawGroupDir("templates/project/");
 
-        puts("Reading a text file template file from the classpath");
         ST st = g.getInstanceOf("activity-chart.js");
         st.add("buildcounts", dayData);
 
@@ -188,5 +200,32 @@ public class SiteUpdate {
         FileWriter activityChartFile = new FileWriter(activityChartFilepath);
         activityChartFile.write(st.render());
         activityChartFile.close();
+    }
+
+    private void writeBuildsByResult(String sitePath, Map<BuildResult, Integer> buildCountsByResult) {
+        try {
+            int count = 0;
+            for (int i : buildCountsByResult.values()) {count += i;}
+
+            Map<BuildResult, Double> buildPercentagesByResult = new HashMap<>();
+            final int c = count;
+            buildCountsByResult.keySet().stream().forEach(result ->{
+                buildPercentagesByResult.put(result, (buildCountsByResult.get(result) * 100.0) / c);
+            });
+
+
+            STGroup g = new STRawGroupDir("templates/project/");
+            ST st = g.getInstanceOf("builds-by-result-chart.js");
+            st.add("outcomes", BuildResult.values());
+            st.add("counts", buildPercentagesByResult);
+            String buildsByResultFilepath = sitePath + File.separatorChar + BUILDS_BY_RESULT_CHART_JS_FILENAME;
+            puts("Updating build results chart data " + buildsByResultFilepath);
+
+            FileWriter activityChartFile = new FileWriter(buildsByResultFilepath);
+            activityChartFile.write(st.render());
+            activityChartFile.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write builds by result", e);
+        }
     }
 }
