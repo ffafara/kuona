@@ -247,6 +247,7 @@ public class SiteUpdate {
         activityChartFile.write(st.render());
         activityChartFile.close();
     }
+
     private void writeBuildsByTrigger(String sitePath, BuildTriggers triggers) throws IOException {
         STGroup g = new STRawGroupDir(TEMPLATES_PROJECT_PATH);
 
@@ -272,10 +273,11 @@ public class SiteUpdate {
                 count += i;
             }
 
-            Map<BuildResult, Double> buildPercentagesByResult = new HashMap<>();
+            Map<BuildResult, Long> buildPercentagesByResult = new HashMap<>();
             final int c = count;
             buildCountsByResult.keySet().stream().forEach(result -> {
-                buildPercentagesByResult.put(result, (buildCountsByResult.get(result) * 100.0) / c);
+                final double percentage = (buildCountsByResult.get(result) * 100.0) / c;
+                buildPercentagesByResult.put(result, (long)Math.floor(percentage + 0.4));
             });
 
 
