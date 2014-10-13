@@ -12,7 +12,8 @@ public class BuildTriggers implements Iterable<BuildTrigger> {
             "Started by user",
             "Started by upstream project",
             "Started by an SCM change",
-            "Started by GitHub push"
+            "Started by GitHub push",
+            "Rebuilds"
 
     };
     HashMap<String, BuildTrigger> triggers = new HashMap<>();
