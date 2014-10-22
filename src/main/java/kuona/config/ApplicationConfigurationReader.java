@@ -3,9 +3,9 @@ package kuona.config;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import kuona.model.Project;
 import kuona.client.JenkinsHttpClient;
 import kuona.client.JenkinsLocalClient;
+import kuona.model.Project;
 import kuona.server.JenkinsServer;
 
 import java.io.File;

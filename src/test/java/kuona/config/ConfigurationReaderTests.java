@@ -1,7 +1,5 @@
-package kuona;
+package kuona.config;
 
-import kuona.config.ApplicationConfiguration;
-import kuona.config.ApplicationConfigurationReader;
 import kuona.server.JenkinsServer;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -12,7 +10,7 @@ import java.util.List;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class ConfigurationTests {
+public class ConfigurationReaderTests {
     @Test
     public void readsProjectName() throws IOException {
         ApplicationConfigurationReader configurationReader = new ApplicationConfigurationReader();

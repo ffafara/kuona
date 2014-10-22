@@ -26,6 +26,9 @@ public class JobWithDetails extends Job {
     int nextBuildNumber;
     List<Job> downstreamProjects;
     List<Job> upstreamProjects;
+    public JobWithDetails() {
+        builds = new ArrayList<>();
+    }
 
     public String getDisplayName() {
         return displayName;
@@ -36,14 +39,11 @@ public class JobWithDetails extends Job {
     }
 
     public List<Build> getBuilds() {
-        if (builds == null)
-            return new ArrayList<>();
         return Lists.transform(builds, this::buildWithClient);
     }
 
     private Build buildWithClient(Build from) {
         Build ret = new Build(from, client);
-//        ret.setClient(client);
         return ret;
     }
 
@@ -85,6 +85,10 @@ public class JobWithDetails extends Job {
 
     public List<Job> getUpstreamProjects() {
         return Lists.transform(upstreamProjects, new JobWithClient());
+    }
+
+    public JobWithDetails merge(JobWithDetails jobWithDetails) {
+        return this;
     }
 
     private class JobWithClient implements Function<Job, Job> {
