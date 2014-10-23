@@ -88,7 +88,10 @@ public class JobWithDetails extends Job {
     }
 
     public JobWithDetails merge(JobWithDetails jobWithDetails) {
-        return this;
+        final JobWithDetails merged = new JobWithDetails();
+        merged.builds.addAll(this.builds);
+        merged.builds.addAll(jobWithDetails.builds);
+        return merged;
     }
 
     private class JobWithClient implements Function<Job, Job> {
