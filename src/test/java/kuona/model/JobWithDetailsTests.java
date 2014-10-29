@@ -40,4 +40,18 @@ public class JobWithDetailsTests {
         assertThat(merged.getBuilds(), hasItems(buildA, buildB));
     }
 
+    @Test
+    public void mergedJobFormListsWithSameBuildContainsDistinctBuild() {
+        JobWithDetails jobA = new JobWithDetails();
+        final Build buildA = new Build(1, "");
+        jobA.builds.add(buildA);
+        JobWithDetails jobB = new JobWithDetails();
+        final Build buildB = new Build(1, "");
+        jobB.builds.add(buildB);
+
+        JobWithDetails merged = jobA.merge(jobB);
+
+        assertThat(merged.getBuilds().size(), is(1));
+        assertThat(merged.getBuilds(), hasItems(buildA));
+    }
 }

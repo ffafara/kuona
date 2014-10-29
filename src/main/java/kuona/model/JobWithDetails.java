@@ -11,6 +11,8 @@ import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class JobWithDetails extends Job {
     String displayName;
@@ -90,7 +92,8 @@ public class JobWithDetails extends Job {
     public JobWithDetails merge(JobWithDetails jobWithDetails) {
         final JobWithDetails merged = new JobWithDetails();
         merged.builds.addAll(this.builds);
-        merged.builds.addAll(jobWithDetails.builds);
+        final Stream<Build> buildStream = jobWithDetails.builds.stream().filter(p -> !merged.builds.contains(p));
+        merged.builds.addAll(buildStream.collect(Collectors.toList()));
         return merged;
     }
 
