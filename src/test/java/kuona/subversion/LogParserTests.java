@@ -12,7 +12,7 @@ public class LogParserTests {
     @Test
     public void acceptsEmptyStream() {
         ArrayList<Revision> revisions = new ArrayList<>();
-        LogParser parser = new LogParser(revisions::add);
+        SubversionLogParser parser = new SubversionLogParser(revisions::add);
 
         parser.parse(new ByteArrayInputStream("".getBytes()));
 
@@ -22,7 +22,7 @@ public class LogParserTests {
     @Test
     public void recognisesRevisionLine() {
         ArrayList<Revision> revisions = new ArrayList<>();
-        LogParser parser = new LogParser(revisions::add);
+        SubversionLogParser parser = new SubversionLogParser(revisions::add);
 
         parser.parse(new ByteArrayInputStream((
                 "------------------------------------------------------------------------\n" +
@@ -38,7 +38,7 @@ public class LogParserTests {
     @Test
     public void recognisesChangedPaths() {
         ArrayList<Revision> revisions = new ArrayList<>();
-        LogParser parser = new LogParser(revisions::add);
+        SubversionLogParser parser = new SubversionLogParser(revisions::add);
 
         parser.parse(new ByteArrayInputStream((
                 "------------------------------------------------------------------------\n" +
@@ -60,7 +60,7 @@ public class LogParserTests {
     @Test
     public void recognisesChangedHunk() {
         ArrayList<Revision> revisions = new ArrayList<>();
-        LogParser parser = new LogParser(revisions::add);
+        SubversionLogParser parser = new SubversionLogParser(revisions::add);
 
         parser.parse(new ByteArrayInputStream((
                 "------------------------------------------------------------------------\n" +
@@ -123,7 +123,7 @@ public class LogParserTests {
                 "------------------------------------------------------------------------\n";
 
         ArrayList<Revision> revisions = new ArrayList<>();
-        LogParser parser = new LogParser(revisions::add);
+        SubversionLogParser parser = new SubversionLogParser(revisions::add);
 
         parser.parse(new ByteArrayInputStream(logData.getBytes()));
 

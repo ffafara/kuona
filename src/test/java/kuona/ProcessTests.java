@@ -1,6 +1,6 @@
 package kuona;
 
-import kuona.subversion.LogParser;
+import kuona.subversion.SubversionLogParser;
 import kuona.subversion.Revision;
 import org.junit.Test;
 
@@ -16,15 +16,14 @@ import static org.junit.Assert.assertThat;
 public class ProcessTests {
     @Test
     public void capturesOutput() throws IOException {
-        String repoPath = "file://" + Paths.get("").toAbsolutePath().toString() + "/svn-test-repo";
-        ProcessBuilder builder = new ProcessBuilder("svn", "log", "--diff", "-v", repoPath);
+        ProcessBuilder builder = new ProcessBuilder("svn", "log", "--diff", "-v", getTestRepositoryPath());
 
         final Process process = builder.start();
 
         final InputStream inputStream = process.getInputStream();
 
         ArrayList<Revision> revisions = new ArrayList<>();
-        LogParser parser = new LogParser(revisions::add);
+        SubversionLogParser parser = new SubversionLogParser(revisions::add);
 
         parser.parse(inputStream);
 
@@ -35,5 +34,9 @@ public class ProcessTests {
         assertThat(firstRevision.getRevisionNumber(), is(1));
         assertThat(firstRevision.getUsername(), is("graham"));
         assertThat(firstRevision.getChangedPaths().size(), is(1));
+    }
+
+    private String getTestRepositoryPath() {
+        return "file://" + Paths.get("").toAbsolutePath().toString() + "/svn-test-repo";
     }
 }

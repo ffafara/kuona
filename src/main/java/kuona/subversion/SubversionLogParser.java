@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LogParser {
+public class SubversionLogParser {
 
     private static final Pattern changePathPattern = Pattern.compile("^   " +
             "(A|D|M|R) " +   // Action code
@@ -24,7 +24,7 @@ public class LogParser {
     private RevisionAccepter revisionAccepter;
     private Revision pendingRevision = null;
 
-    public LogParser(RevisionAccepter revisionAccepter) {
+    public SubversionLogParser(RevisionAccepter revisionAccepter) {
         this.revisionAccepter = revisionAccepter;
         this.state = start;
     }
