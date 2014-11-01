@@ -26,6 +26,7 @@
     <path id="test.lib.classpath">
         <pathelement location="lib/test/junit-4.11.jar"/>
         <pathelement location="lib/test/hamcrest-core-1.3.jar"/>
+        <pathelement location="lib/test/hamcrest-library-1.3.jaradde"/>
         <pathelement location="lib/test/mockito-all-1.9.5.jar"/>
     </path>
 
