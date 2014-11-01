@@ -36,7 +36,7 @@ public class LogParser {
         pendingRevision = null;
     }
 
-    void parse(InputStream log) {
+    public void parse(InputStream log) {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(log));
 
@@ -44,7 +44,7 @@ public class LogParser {
         emit();
     }
 
-    interface RevisionAccepter {
+    public interface RevisionAccepter {
         void accept(Revision r);
     }
 
