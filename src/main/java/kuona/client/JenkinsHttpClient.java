@@ -6,11 +6,10 @@
 
 package kuona.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import kuona.model.BaseModel;
-import kuona.utils.Deserializer;
-import kuona.model.Project;
 import kuona.client.validator.HttpResponseValidator;
+import kuona.model.BaseModel;
+import kuona.model.Project;
+import kuona.utils.Deserializer;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -36,7 +35,6 @@ public class JenkinsHttpClient implements JenkinsClient {
     private BasicHttpContext localContext;
     private HttpResponseValidator httpResponseValidator;
 
-    private ObjectMapper mapper;
     private String context;
     private Project project;
 
