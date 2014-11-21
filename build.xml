@@ -102,6 +102,7 @@
             <manifest>
                 <attribute name="Main-Class" value="kuona.Main"/>
             </manifest>
+            <!--<fileset dir="src/main/resources" />-->
         </jar>
 
         <one-jar destfile="${app-jar-complete}">

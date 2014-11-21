@@ -15,23 +15,23 @@ public class SiteGeneratorTests {
     public void createsFoldersForResourcesWithoutSeparators() {
         Site site = mock(Site.class);
 
-        SiteGenerator generator = new SiteGenerator(site);
+        SiteGenerator generator = new SiteGenerator(site, SiteGenerator.Options.NO_CONFIG);
 
         generator.generate("test-site","test-foo");
 
-        verify(site).createDirectory("test-foo");
-        verify(site).createDirectory("test-foo/test-folder");
-        verify(site).createFile(eq("test-foo/test-folder/index.html"), any(InputStream.class));
+        verify(site).createDirectory("test-foo/_site");
+        verify(site).createDirectory("test-foo/_site/test-folder");
+        verify(site).createFile(eq("test-foo/_site/test-folder/index.html"), any(InputStream.class));
     }
 
     @Test
     public void createsFilesForResourcesWithSeparators() {
         Site site = mock(Site.class);
 
-        SiteGenerator generator = new SiteGenerator(site);
+        SiteGenerator generator = new SiteGenerator(site, SiteGenerator.Options.NO_CONFIG);
 
         generator.generate("test-site/test-folder", "test-foo");
 
-        verify(site).createFile(eq("test-foo/index.html"), any(InputStream.class));
+        verify(site).createFile(eq("test-foo/_site/index.html"), any(InputStream.class));
     }
 }

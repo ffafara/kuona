@@ -1,6 +1,5 @@
 package kuona;
 
-import kuona.config.ApplicationConfiguration;
 import kuona.config.ApplicationConfigurationReader;
 import kuona.config.KuonaSpec;
 import kuona.controller.SiteUpdate;
@@ -8,6 +7,7 @@ import kuona.generator.Site;
 import kuona.generator.SiteGenerator;
 import kuona.server.KuonaServer;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,14 @@ public class Application {
 
     public static final String VERSION = "0.0.1";
 
+
     public void run(String[] args) {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+
+        final URL resource = cl.getResource("templates/project/config.yml.st");
+
+        System.out.println("Resource address " + resource);
+
         if (args.length < 1) {
             if (configExists()) {
                 updateSite();

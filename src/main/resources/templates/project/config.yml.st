@@ -1,6 +1,6 @@
-site
-  name: A useful site name
-  path: test-site
+site:
+  name: <name>
+  path: _site
 servers:
   - name: my server
     url: http://some.path
