@@ -1,22 +1,17 @@
 package kuona.config;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import kuona.client.JenkinsHttpClient;
-import kuona.client.JenkinsLocalClient;
-import kuona.model.Project;
-import kuona.server.JenkinsServer;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ApplicationConfigurationReader {
 
@@ -26,63 +21,37 @@ public class ApplicationConfigurationReader {
         return new File(FILENAME).isFile();
     }
 
-    public ApplicationConfiguration read() {
+    public KuonaSpec read() {
         try {
             FileInputStream source = new FileInputStream(FILENAME);
-            ApplicationConfiguration config = read(source);
+            KuonaSpec config = read(source);
             source.close();
             return config;
         } catch (Exception e) {
+            System.err.println(e.getLocalizedMessage());
             return null;
         }
     }
 
-    public ApplicationConfiguration read(InputStream source) {
+    public KuonaSpec read(InputStream source) {
+        YAMLFactory factory = new YAMLFactory();
+
+        ObjectMapper mapper = new ObjectMapper(factory);
+        mapper.enableDefaultTyping();
+
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+        mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        mapper.registerSubtypes(BuildServerSpec.class);
+        mapper.registerSubtypes(RepositorySpec.class);
+        mapper.registerSubtypes(new NamedType(SiteSpec.class, "site"));
+
         try {
-            YAMLFactory factory = new YAMLFactory();
-            ObjectMapper mapper = new ObjectMapper(factory);
-            TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-            };
-
-            HashMap<String, Object> o = mapper.readValue(source, typeRef);
-
-            return new ApplicationConfiguration() {
-                private final HashMap<String, Object> data = o;
-
-                public String name() {
-                    return data.get("name").toString();
-                }
-
-                public List<JenkinsServer> servers() {
-                    final ArrayList<JenkinsServer> result = new ArrayList<>();
-                    final ArrayList<Map<String, String>> servers = (ArrayList<Map<String, String>>) data.get("servers");
-
-                    for (Map<String, String> m : servers) {
-                        try {
-                            String url = m.get("url");
-                            String username = m.get("username");
-                            String password = m.get("password");
-
-                            final URI uri = new URI(url);
-                            final Project project = new Project(uri);
-                            final JenkinsLocalClient client = new JenkinsLocalClient(project, new JenkinsHttpClient(project, uri, username, password));
-
-                            result.add(new JenkinsServer(client));
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-
-                    return result;
-                }
-
-                public String getSitePath() {
-                    return (String) data.get("site-path");
-                }
-
-            };
+            return mapper.readValue(source, KuonaSpec.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed reading configuration", e);
         }
     }
 }

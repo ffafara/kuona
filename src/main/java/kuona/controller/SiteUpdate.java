@@ -2,22 +2,20 @@ package kuona.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kuona.Application;
-import kuona.config.ApplicationConfiguration;
+import kuona.FileTemplate;
+import kuona.config.KuonaSpec;
 import kuona.metric.BuildTriggers;
 import kuona.metric.ByDuration;
 import kuona.model.*;
 import org.joda.time.DateTime;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STRawGroupDir;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static kuona.FileTemplate.property;
 import static kuona.utils.Utils.puts;
 
 public class SiteUpdate {
@@ -27,22 +25,27 @@ public class SiteUpdate {
     public static final String BUILDS_BY_TRIGGER_JS_FILENAME = "builds-by-trigger-chart.js";
     public static final String DASHBOARD_JSON_FILENAME = "dashboard.json";
     public static final String ACTIVITY_CHART_JS_FILENAME = "activity-chart.js";
-    public static final String TEMPLATES_PROJECT_PATH = "templates/project/";
-    private final ApplicationConfiguration config;
+    private final KuonaSpec config;
 
-    public SiteUpdate(ApplicationConfiguration config) {
+    public SiteUpdate(KuonaSpec config) {
 
         this.config = config;
     }
 
     public void update() {
+        updateSiteBuildData();
+
+        config.repositoryProcessors().stream().forEach(processor -> processor.process(config.getSite()));
+    }
+
+    private void updateSiteBuildData() {
         ArrayList<BuildWithDetails> completedBuilds = new ArrayList<>();
         try {
             puts("Updating CI data");
             String sitePath = config.getSitePath();
 
             Map<String, Object> dashboard = new HashMap<>();
-            List<Map> dashboardServers = new ArrayList<>();
+            List<HashMap<String, Object>> dashboardServers = new ArrayList<>();
 
             Map<Integer, int[]> activity = new HashMap<>();
 
@@ -53,7 +56,7 @@ public class SiteUpdate {
             ByDuration byDuration = new ByDuration();
             BuildTriggers triggers = new BuildTriggers();
 
-            config.servers().stream().forEach(jenkins -> {
+            config.buildProcessors().stream().forEach(jenkins -> {
                 try {
                     puts("Updating " + jenkins.getURI());
                     final int[] jobCount = {0};
@@ -92,20 +95,15 @@ public class SiteUpdate {
 
                                     byDuration.collect(details.getDuration());
                                     final List<Map> actions = details.getActions();
-                                    for (Map action : actions) {
-                                        if (action != null) {
-                                            if (action.containsKey("causes")) {
-                                                List<HashMap> causes = (List<HashMap>) action.get("causes");
+                                    actions.stream().filter(action -> action != null).forEach(action -> {
+                                        if (action.containsKey("causes")) {
+                                            List<HashMap> causes = (List<HashMap>) action.get("causes");
 
-                                                for (HashMap cause : causes) {
-
-                                                    if (cause.containsKey("shortDescription")) {
-                                                        triggers.add((String) cause.get("shortDescription"));
-                                                    }
-                                                }
-                                            }
+                                            causes.stream().filter(cause -> cause.containsKey("shortDescription")).forEach(cause -> {
+                                                triggers.add((String) cause.get("shortDescription"));
+                                            });
                                         }
-                                    }
+                                    });
                                     completedBuilds.add(details);
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -140,10 +138,19 @@ public class SiteUpdate {
 
             generateSparklines(dashboard, activity);
 
-            writeActivityChartFile(sitePath, dayData(activity));
+            FileTemplate.get(ACTIVITY_CHART_JS_FILENAME)
+                    .with(property("buildcounts", dayData(activity)))
+                    .renderTo(sitePath + File.separatorChar + ACTIVITY_CHART_JS_FILENAME);
+
             writeBuildsByResult(sitePath, buildCountsByResult);
-            writeBuildsByDuration(sitePath, byDuration);
-            writeBuildsByTrigger(sitePath, triggers);
+
+            FileTemplate.get(BUILDS_BY_DURATION_JS_FILENAME)
+                    .with(property("bands", byDuration.getBands()))
+                    .renderTo(sitePath + File.separatorChar + BUILDS_BY_DURATION_JS_FILENAME);
+
+            FileTemplate.get(BUILDS_BY_TRIGGER_JS_FILENAME)
+                    .with(property("triggers", triggers.iterator()))
+                    .renderTo(sitePath + File.separatorChar + BUILDS_BY_TRIGGER_JS_FILENAME);
 
             writeDashboardDataFile(sitePath, dashboard);
 
@@ -210,94 +217,23 @@ public class SiteUpdate {
         };
     }
 
-    private void writeActivityChartFile(String sitePath, ArrayList dayData) throws IOException {
-        puts("Generating activity chart file");
-        STGroup g = new STRawGroupDir(TEMPLATES_PROJECT_PATH);
-
-        ST st = g.getInstanceOf(ACTIVITY_CHART_JS_FILENAME);
-        if (st == null) {
-            puts("Failed to load " + ACTIVITY_CHART_JS_FILENAME + " template. Site not updated correctly");
-            return;
-        }
-
-        st.add("buildcounts", dayData);
-
-        String activityChartFilepath = sitePath + File.separatorChar + ACTIVITY_CHART_JS_FILENAME;
-        puts("Updating activitiy chart data " + activityChartFilepath);
-
-        FileWriter activityChartFile = new FileWriter(activityChartFilepath);
-        activityChartFile.write(st.render());
-        activityChartFile.close();
-    }
-
-    private void writeBuildsByDuration(String sitePath, ByDuration byDuration) throws IOException {
-        STGroup g = new STRawGroupDir(TEMPLATES_PROJECT_PATH);
-
-        ST st = g.getInstanceOf(BUILDS_BY_DURATION_JS_FILENAME);
-        if (st == null) {
-            puts("Failed to load " + BUILDS_BY_DURATION_JS_FILENAME + " template. Site not updated correctly");
-            return;
-        }
-        st.add("bands", byDuration.getBands());
-
-        String activityChartFilepath = sitePath + File.separatorChar + BUILDS_BY_DURATION_JS_FILENAME;
-        puts("Updating activitiy chart data " + activityChartFilepath);
-
-        FileWriter activityChartFile = new FileWriter(activityChartFilepath);
-        activityChartFile.write(st.render());
-        activityChartFile.close();
-    }
-
-    private void writeBuildsByTrigger(String sitePath, BuildTriggers triggers) throws IOException {
-        STGroup g = new STRawGroupDir(TEMPLATES_PROJECT_PATH);
-
-        ST st = g.getInstanceOf(BUILDS_BY_TRIGGER_JS_FILENAME);
-        if (st == null) {
-            puts("Failed to load " + BUILDS_BY_TRIGGER_JS_FILENAME + " template. Site not updated correctly");
-            return;
-        }
-        st.add("triggers", triggers.iterator());
-
-        String activityChartFilepath = sitePath + File.separatorChar + BUILDS_BY_TRIGGER_JS_FILENAME;
-        puts("Updating chart data " + activityChartFilepath);
-
-        FileWriter activityChartFile = new FileWriter(activityChartFilepath);
-        activityChartFile.write(st.render());
-        activityChartFile.close();
-    }
-
     private void writeBuildsByResult(String sitePath, Map<BuildResult, Integer> buildCountsByResult) {
-        try {
-            int count = 0;
-            for (int i : buildCountsByResult.values()) {
-                count += i;
-            }
-
-            Map<BuildResult, Long> buildPercentagesByResult = new HashMap<>();
-            final int c = count;
-            buildCountsByResult.keySet().stream().forEach(result -> {
-                final double percentage = (buildCountsByResult.get(result) * 100.0) / c;
-                buildPercentagesByResult.put(result, (long)Math.floor(percentage + 0.4));
-            });
-
-
-            STGroup g = new STRawGroupDir(TEMPLATES_PROJECT_PATH);
-            ST st = g.getInstanceOf(BUILDS_BY_RESULT_CHART_JS_FILENAME);
-            if (st == null) {
-                puts("Failed to load " + BUILDS_BY_RESULT_CHART_JS_FILENAME + " template. Site not updated correctly");
-                return;
-            }
-
-            st.add("outcomes", BuildResult.values());
-            st.add("counts", buildPercentagesByResult);
-            String buildsByResultFilepath = sitePath + File.separatorChar + BUILDS_BY_RESULT_CHART_JS_FILENAME;
-            puts("Updating build results chart data " + buildsByResultFilepath);
-
-            FileWriter activityChartFile = new FileWriter(buildsByResultFilepath);
-            activityChartFile.write(st.render());
-            activityChartFile.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to write builds by result", e);
+        int count = 0;
+        for (int i : buildCountsByResult.values()) {
+            count += i;
         }
+
+        Map<BuildResult, Long> buildPercentagesByResult = new HashMap<>();
+        final int c = count;
+        buildCountsByResult.keySet().stream().forEach(result -> {
+            final double percentage = (buildCountsByResult.get(result) * 100.0) / c;
+            buildPercentagesByResult.put(result, (long) Math.floor(percentage + 0.4));
+        });
+
+
+        FileTemplate.get(BUILDS_BY_RESULT_CHART_JS_FILENAME)
+                .with(property("outcomes", BuildResult.values()))
+                .with(property("counts", buildPercentagesByResult))
+                .renderTo(sitePath + File.separatorChar + BUILDS_BY_RESULT_CHART_JS_FILENAME);
     }
 }

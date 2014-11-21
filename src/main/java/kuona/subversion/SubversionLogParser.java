@@ -1,15 +1,16 @@
 package kuona.subversion;
 
+import org.joda.time.DateTime;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SubversionLogParser {
 
+    public static final String COMMIT_BREAK = "^-----------+";
     private static final Pattern changePathPattern = Pattern.compile("^   " +
             "(A|D|M|R) " +   // Action code
             "(.*)");         // Path
@@ -19,7 +20,7 @@ public class SubversionLogParser {
             "(\\d+)" + SEPARATOR +
             "(\\S+)" + SEPARATOR +
             "(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}) ([-+])(\\d{2})(\\d{2}) \\([^\\)]+\\)" + SEPARATOR +
-            "(\\d+) line");
+            "(\\d+) line(s)?");
     State state;
     private RevisionAccepter revisionAccepter;
     private Revision pendingRevision = null;
@@ -49,10 +50,6 @@ public class SubversionLogParser {
     }
 
     State paths = (String text) -> {
-        if (text.matches("")) {
-            return this.commitMessage;
-        }
-
         Matcher matcher = changePathPattern.matcher(text);
 
         if (matcher.matches()) {
@@ -60,11 +57,33 @@ public class SubversionLogParser {
             return this.paths;
         }
 
+        if (text.matches(COMMIT_BREAK)) {
+            emit();
+            return this.start;
+        }
+
+        if (text.matches("")) {
+            return this.commitMessage;
+        }
+
         return this.start;
     };
 
     State commitMessage = (String text) -> {
-        if (text.matches("")) {
+        if (text.matches(COMMIT_BREAK)) {
+            emit();
+            return this.start;
+        }
+
+        Matcher matcher = hunkPattern.matcher(text);
+
+        if (matcher.matches()) {
+            pendingRevision.addHunk(
+                    Integer.parseInt(matcher.group(1)),
+                    Integer.parseInt(matcher.group(2)),
+                    Integer.parseInt(matcher.group(3)),
+                    Integer.parseInt(matcher.group(4))
+            );
             return this.start;
         }
 
@@ -73,16 +92,17 @@ public class SubversionLogParser {
     };
 
     State start = (String text) -> {
-        if (text.matches("^-----------+")) {
+        if (text.matches(COMMIT_BREAK)) {
             emit();
             return this.start;
         }
         Matcher matcher = revisionSeparator.matcher(text);
 
         if (matcher.matches()) {
+            DateTime dateTime = DateTime.parse(matcher.group(3) + "T" + matcher.group(4) + matcher.group(5) + matcher.group(6) + ":" + matcher.group(7));
             pendingRevision = new Revision(Integer.parseInt(matcher.group(1)),
                     matcher.group(2),
-                    LocalTime.parse(matcher.group(3) + "T" + matcher.group(4) + matcher.group(5) + matcher.group(6) + ":" + matcher.group(7), DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                    dateTime
             );
             return this.start;
         }

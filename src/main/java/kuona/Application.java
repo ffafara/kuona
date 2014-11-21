@@ -2,6 +2,7 @@ package kuona;
 
 import kuona.config.ApplicationConfiguration;
 import kuona.config.ApplicationConfigurationReader;
+import kuona.config.KuonaSpec;
 import kuona.controller.SiteUpdate;
 import kuona.generator.Site;
 import kuona.generator.SiteGenerator;
@@ -53,7 +54,7 @@ public class Application {
 
     private void startServer(List<String> arguments) {
         ApplicationConfigurationReader reader = new ApplicationConfigurationReader();
-        ApplicationConfiguration config = reader.read();
+        KuonaSpec config = reader.read();
 
         String sitePath = config.getSitePath();
 
@@ -65,7 +66,7 @@ public class Application {
 
     private void updateSite() {
         ApplicationConfigurationReader reader = new ApplicationConfigurationReader();
-        ApplicationConfiguration config = reader.read();
+        KuonaSpec config = reader.read();
         SiteUpdate update = new SiteUpdate(config);
 
         update.update();

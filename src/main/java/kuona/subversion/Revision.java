@@ -1,19 +1,20 @@
 package kuona.subversion;
 
+import org.joda.time.DateTime;
+
 import java.sql.Time;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Revision {
     int revisionNumber;
     private String username;
-    private LocalTime revisionDate;
+    private DateTime revisionDate;
     private List<PathChange> changedPaths;
     private String commitMessage;
     private List<Hunk> hunks;
 
-    public Revision(int revisionNumber, String username, LocalTime revisionDate) {
+    public Revision(int revisionNumber, String username, DateTime revisionDate) {
 
         this.revisionNumber = revisionNumber;
         this.username = username;
@@ -32,7 +33,7 @@ public class Revision {
 
     }
 
-    public LocalTime getRevisionDate() {
+    public DateTime getRevisionDate() {
         return revisionDate;
     }
 

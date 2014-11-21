@@ -1,7 +1,7 @@
 package kuona;
 
-import kuona.subversion.SubversionLogParser;
 import kuona.subversion.Revision;
+import kuona.subversion.SubversionLogParser;
 import org.junit.Test;
 
 import java.io.IOException;

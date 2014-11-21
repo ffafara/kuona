@@ -11,4 +11,6 @@ public interface ApplicationConfiguration {
     public List<JenkinsServer> servers();
 
     public String getSitePath();
+
+    List<RepositorySpec> repositories();
 }

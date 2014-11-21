@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class LogParserTests {
+public class SubversionLogParserTests {
     @Test
     public void acceptsEmptyStream() {
         ArrayList<Revision> revisions = new ArrayList<>();
@@ -30,7 +30,7 @@ public class LogParserTests {
         assertThat(revisions.size(), is(1));
         assertThat(revisions.get(0).getRevisionNumber(), is(123));
         assertThat(revisions.get(0).getUsername(), is("foobar23_"));
-        assertThat(revisions.get(0).getRevisionDate().getHour(), is(11));
+        assertThat(revisions.get(0).getRevisionDate().hourOfDay().get(), is(11));
 
 
     }
@@ -53,7 +53,7 @@ public class LogParserTests {
         assertThat(revisions.size(), is(1));
         assertThat(revisions.get(0).getChangedPaths().size(), is(1));
         assertThat(revisions.get(0).getChangedPaths().get(0).getPath(), is("/trunk/grappelli/templates/admin/edit_inline/stacked.html"));
-        assertThat(revisions.get(0).commitMessage(), is("message line 1\nmessage line 2\n"
+        assertThat(revisions.get(0).commitMessage(), is("message line 1\nmessage line 2\n\n"
         ));
     }
 
@@ -76,6 +76,7 @@ public class LogParserTests {
         ).getBytes()));
         assertThat(revisions.get(0).hunk(0).changedLines(), is(1));
     }
+
 
     @Test
     public void acceptanceTest() {
