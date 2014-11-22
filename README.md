@@ -31,7 +31,7 @@ Will create a new folder _project-name_ containing a config.yml file and a subdi
 
 Running
 
-	java -jar kuona-complete.jar server
+	java -jar kuona-complete.jar serve
 
 in the project directory runs the web server on port 8080 so point your browser at http://localhost:8080
 
