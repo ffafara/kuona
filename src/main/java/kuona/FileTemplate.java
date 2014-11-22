@@ -3,8 +3,6 @@ package kuona;
 import kuona.stringtemplate.Template;
 import org.apache.commons.lang3.tuple.Pair;
 import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STRawGroupDir;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,7 +20,6 @@ public class FileTemplate {
     }
 
     public static FileTemplate get(String templateName) {
-        STRawGroupDir.verbose = true;
         Template g = new Template(TEMPLATES_PROJECT_PATH);
 
         ST st = g.getInstanceOf(templateName);
