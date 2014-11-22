@@ -1,6 +1,6 @@
 package kuona.config;
 
-import kuona.server.JenkinsServer;
+import kuona.processor.JenkinsProcessor;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ public interface ApplicationConfiguration {
 
     public String name();
 
-    public List<JenkinsServer> servers();
+    public List<JenkinsProcessor> servers();
 
     public String getSitePath();
 

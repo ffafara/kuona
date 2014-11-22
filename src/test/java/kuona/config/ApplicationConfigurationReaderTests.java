@@ -1,6 +1,6 @@
 package kuona.config;
 
-import kuona.server.BuildProcessor;
+import kuona.processor.BuildProcessor;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 

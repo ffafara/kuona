@@ -1,5 +1,6 @@
 package kuona.processor;
 
+import kuona.config.BuildServerSpec;
 import kuona.config.RepositorySpec;
 import org.junit.Test;
 
@@ -16,5 +17,15 @@ public class ProcessorBuilderTests {
         final RepositoryProcessor processor = builder.build(spec, "Subversion", RepositoryProcessor.class);
 
         assertThat(processor.getName(), is("Subversion"));
+    }
+
+    @Test
+    public void canInstantiateJenkinsProcessor() {
+        ProcessorBuilder builder = new ProcessorBuilder();
+        BuildServerSpec spec = new BuildServerSpec("foo", "/some/path", "Jenkins", "user", "password");
+
+        final BuildProcessor processor = builder.build(spec, "Jenkins", BuildProcessor.class);
+
+        assertThat(processor.getName(), is("Jenkins"));
     }
 }

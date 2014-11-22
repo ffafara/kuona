@@ -4,6 +4,6 @@ site:
 servers:
   - name: my server
     url: http://some.path
-    processor: jenkins
+    processor: Jenkins
     username:
     password:

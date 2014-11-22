@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import kuona.processor.BuildProcessor;
+import kuona.processor.JenkinsProcessor;
 import kuona.processor.RepositoryProcessor;
-import kuona.server.BuildProcessor;
-import kuona.server.JenkinsServer;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -80,11 +80,11 @@ public class KuonaSpecTests {
     @Test
     public void providesJenkinsServers() {
         KuonaSpec spec = new KuonaSpec();
-        spec.getBuildServers().add(new BuildServerSpec("foo", "/some/foo", "kuona.processor.Jenkins", "", ""));
+        spec.getBuildServers().add(new BuildServerSpec("foo", "/some/foo", "Jenkins", "", ""));
 
         final List<BuildProcessor> buildProcessors = spec.buildProcessors();
         assertThat(buildProcessors.size(), is(1));
-        JenkinsServer j = (JenkinsServer) buildProcessors.get(0);
+        JenkinsProcessor j = (JenkinsProcessor) buildProcessors.get(0);
         assertThat(j.getURI().toString(), is("/some/foo"));
     }
 

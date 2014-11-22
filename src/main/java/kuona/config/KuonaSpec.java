@@ -1,16 +1,10 @@
 package kuona.config;
 
 import com.google.common.collect.Lists;
-import kuona.client.JenkinsHttpClient;
-import kuona.client.JenkinsLocalClient;
-import kuona.model.Project;
+import kuona.processor.BuildProcessor;
 import kuona.processor.ProcessorBuilder;
 import kuona.processor.RepositoryProcessor;
-import kuona.server.BuildProcessor;
-import kuona.server.JenkinsServer;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,22 +35,17 @@ public class KuonaSpec {
     }
 
     public List<BuildProcessor> buildProcessors() {
-        return Lists.transform(servers, this::jenkinsServers);
+        return Lists.transform(servers, this::buildServerProcessors);
     }
 
     public List<RepositoryProcessor> repositoryProcessors() {
         return Lists.transform(repositories, this::buildRepositoryProcessor);
     }
 
-    private JenkinsServer jenkinsServers(BuildServerSpec spec) {
-        try {
-
-            final URI uri = new URI(spec.getUrl());
-            final Project project = new Project(uri);
-            return new JenkinsServer(new JenkinsLocalClient(project, new JenkinsHttpClient(project, uri, spec.getUsername(), spec.getPassword())));
-        } catch (URISyntaxException e) {
-            return null;
-        }
+    private BuildProcessor buildServerProcessors(BuildServerSpec spec) {
+        final ProcessorBuilder processorBulder = new ProcessorBuilder();
+        BuildProcessor processor = processorBulder.build(spec, spec.getProcessor(), BuildProcessor.class);
+        return processor;
     }
 
     private RepositoryProcessor buildRepositoryProcessor(RepositorySpec spec) {

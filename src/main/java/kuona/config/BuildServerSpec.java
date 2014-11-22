@@ -10,7 +10,7 @@ public class BuildServerSpec {
     BuildServerSpec() {
     }
 
-    BuildServerSpec(String name, String url, String processor, String username, String password) {
+    public BuildServerSpec(String name, String url, String processor, String username, String password) {
 
         this.name = name;
         this.url = url;

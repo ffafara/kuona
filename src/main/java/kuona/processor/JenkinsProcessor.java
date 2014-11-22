@@ -4,17 +4,21 @@
  * Distributed under the MIT license: http://opensource.org/licenses/MIT
  */
 
-package kuona.server;
+package kuona.processor;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import kuona.client.JenkinsClient;
+import kuona.client.JenkinsHttpClient;
+import kuona.client.JenkinsLocalClient;
+import kuona.config.BuildServerSpec;
 import kuona.controller.BuildMetrics;
 import kuona.model.*;
 import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.*;
@@ -24,16 +28,21 @@ import static kuona.utils.Utils.puts;
 /**
  * The main starting point for interacting with a Jenkins server.
  */
-public class JenkinsServer implements BuildProcessor {
+public class JenkinsProcessor implements BuildProcessor {
     private final JenkinsClient client;
 
 
-    /**
-     * Create a new Jenkins server directly from an HTTP client (ADVANCED)
-     *
-     * @param client Specialized client to use.
-     */
-    public JenkinsServer(JenkinsClient client) {
+    public JenkinsProcessor(BuildServerSpec spec) {
+        try {
+            final URI uri = new URI(spec.getUrl());
+            final Project project = new Project(uri);
+            this.client = new JenkinsLocalClient(project, new JenkinsHttpClient(project, uri, spec.getUsername(), spec.getPassword()));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public JenkinsProcessor(JenkinsClient client) {
         this.client = client;
     }
 
@@ -193,5 +202,10 @@ public class JenkinsServer implements BuildProcessor {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public String getName() {
+        return "Jenkins";
     }
 }
