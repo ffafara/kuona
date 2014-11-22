@@ -104,6 +104,9 @@ public class Application {
                 "\n" +
                 "create name    Create a new projects in the named directory. Once created you can update the config.yml\n" +
                 "               file with the required CI settings.\n" +
+                "serve          run the server on port 8080\n" +
+                "update         update the site using configuration from config.yml\n" +
+                "[no-args]      runs update\n" +
                 "\n");
     }
 }
