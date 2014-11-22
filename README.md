@@ -23,7 +23,7 @@ Commands:
 create name    Create a new projects in the named directory. Once created you can update the config.yml
                file with the required CI settings.
 
-```bash
+```
 
 	java -jar kuona-complete.jar create project-name
 
