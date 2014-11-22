@@ -6,13 +6,7 @@
 
 package kuona.model;
 
-import com.google.common.base.Function;
-
 import java.io.IOException;
-import java.util.Map;
-
-import static java.net.URLEncoder.encode;
-import static org.apache.commons.lang.StringUtils.join;
 
 public class Job extends BaseModel {
     private String name;
@@ -39,10 +33,14 @@ public class Job extends BaseModel {
         return client.get(url, JobWithDetails.class);
     }
 
-    private static class MapEntryToQueryStringPair implements Function<Map.Entry<String, String>, String> {
-        @Override
-        public String apply(Map.Entry<String, String> entry) {
-            return encode(entry.getKey()) + "=" + encode(entry.getValue());
-        }
+    @Override
+    public int hashCode() {
+        return 342 + name.hashCode() + url.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Job other = (Job) obj;
+        return name.equals(other.name) && url.equals(other.url);
     }
 }

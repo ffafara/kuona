@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class JobWithDetails extends Job {
+public class JobWithDetails extends Job implements Mergable<JobWithDetails>, Cloneable {
     String displayName;
     boolean buildable;
     List<Build> builds;
@@ -28,6 +28,7 @@ public class JobWithDetails extends Job {
     int nextBuildNumber;
     List<Job> downstreamProjects;
     List<Job> upstreamProjects;
+
     public JobWithDetails() {
         builds = new ArrayList<>();
     }
@@ -35,9 +36,9 @@ public class JobWithDetails extends Job {
     public String getDisplayName() {
         return displayName;
     }
-    
+
     public boolean isBuildable() {
-    	return buildable;
+        return buildable;
     }
 
     public List<Build> getBuilds() {
@@ -89,12 +90,18 @@ public class JobWithDetails extends Job {
         return Lists.transform(upstreamProjects, new JobWithClient());
     }
 
-    public JobWithDetails merge(JobWithDetails jobWithDetails) {
-        final JobWithDetails merged = new JobWithDetails();
-        merged.builds.addAll(this.builds);
-        final Stream<Build> buildStream = jobWithDetails.builds.stream().filter(p -> !merged.builds.contains(p));
-        merged.builds.addAll(buildStream.collect(Collectors.toList()));
-        return merged;
+    @Override
+    public <T> T merge(T other) {
+
+        try {
+            final JobWithDetails merged = (JobWithDetails) this.clone();
+
+            final Stream<Build> buildStream = ((JobWithDetails) other).builds.stream().filter(p -> !merged.builds.contains(p));
+            merged.builds.addAll(buildStream.collect(Collectors.toList()));
+            return (T) merged;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private class JobWithClient implements Function<Job, Job> {

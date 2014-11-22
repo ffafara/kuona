@@ -3,8 +3,9 @@ package kuona.client;
 import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kuona.model.Project;
 import kuona.model.BaseModel;
+import kuona.model.Mergable;
+import kuona.model.Project;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -48,6 +49,12 @@ public class JenkinsLocalClient implements JenkinsClient {
                 final FileInputStream inputStream = FileUtils.openInputStream(new File(project.contentPath(path, cls.getSimpleName())));
                 T t = objectFromResponse(cls, inputStream);
                 t.setClient(this);
+
+                if (Mergable.class.isAssignableFrom(cls)) {
+                    T other = delegate.get(path, cls);
+                    return ((Mergable<T>) t).merge(other);
+                }
+
                 return t;
             } catch (Exception e) {
                 throw new RuntimeException(e);

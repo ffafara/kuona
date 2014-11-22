@@ -9,8 +9,10 @@ package kuona.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class MainView extends BaseModel {
+public class MainView extends BaseModel implements Mergable<MainView>, Cloneable {
     private List<Job> jobs;
     private String description;
     private String name;
@@ -50,5 +52,18 @@ public class MainView extends BaseModel {
 
     public void setJobs(List<Job> jobs) {
         this.jobs = jobs;
+    }
+
+    @Override
+    public <T> T merge(T other) {
+        try {
+            MainView merged = (MainView) this.clone();
+
+            final Stream<Job> buildStream = ((MainView) other).jobs.stream().filter(p -> !merged.jobs.contains(p));
+            merged.jobs.addAll(buildStream.collect(Collectors.toList()));
+            return (T) merged;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
