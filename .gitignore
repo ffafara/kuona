@@ -2,3 +2,6 @@ out/
 build/
 test-site*/
 kuona*.jar
+.idea
+*.iml
+*.ipr
