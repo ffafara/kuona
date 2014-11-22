@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import kuona.processor.RepositoryProcessor;
-import kuona.processor.SubversionProcessor;
+import kuona.server.BuildProcessor;
 import kuona.server.JenkinsServer;
 import org.junit.Test;
 
@@ -17,7 +17,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.Is.isA;
 
 public class KuonaSpecTests {
     @Test
@@ -83,10 +82,10 @@ public class KuonaSpecTests {
         KuonaSpec spec = new KuonaSpec();
         spec.getBuildServers().add(new BuildServerSpec("foo", "/some/foo", "kuona.processor.Jenkins", "", ""));
 
-        final List<JenkinsServer> buildProcessors = spec.buildProcessors();
+        final List<BuildProcessor> buildProcessors = spec.buildProcessors();
         assertThat(buildProcessors.size(), is(1));
-        assertThat(buildProcessors.get(0), isA(JenkinsServer.class));
-        assertThat(buildProcessors.get(0).getURI().toString(), is("/some/foo"));
+        JenkinsServer j = (JenkinsServer) buildProcessors.get(0);
+        assertThat(j.getURI().toString(), is("/some/foo"));
     }
 
     @Test

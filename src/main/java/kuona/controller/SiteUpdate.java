@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kuona.Application;
 import kuona.FileTemplate;
 import kuona.config.KuonaSpec;
-import kuona.metric.BuildTriggers;
-import kuona.metric.ByDuration;
 import kuona.model.*;
 import org.joda.time.DateTime;
 
@@ -28,7 +26,6 @@ public class SiteUpdate {
     private final KuonaSpec config;
 
     public SiteUpdate(KuonaSpec config) {
-
         this.config = config;
     }
 
@@ -39,120 +36,39 @@ public class SiteUpdate {
     }
 
     private void updateSiteBuildData() {
-        ArrayList<BuildWithDetails> completedBuilds = new ArrayList<>();
         try {
             puts("Updating CI data");
             String sitePath = config.getSitePath();
-
-            Map<String, Object> dashboard = new HashMap<>();
-            List<HashMap<String, Object>> dashboardServers = new ArrayList<>();
-
-            Map<Integer, int[]> activity = new HashMap<>();
-
-            Map<BuildResult, Integer> buildCountsByResult = new HashMap<>();
-            for (BuildResult br : BuildResult.values()) {
-                buildCountsByResult.put(br, 0);
-            }
-            ByDuration byDuration = new ByDuration();
-            BuildTriggers triggers = new BuildTriggers();
+            final BuildMetrics metrics= new BuildMetrics();
 
             config.buildProcessors().stream().forEach(jenkins -> {
-                try {
-                    puts("Updating " + jenkins.getURI());
-                    final int[] jobCount = {0};
-                    final int[] buildCount = {0};
-                    Set<String> jobNames = jenkins.getJobs().keySet();
-                    jobCount[0] = jobNames.size();
-                    jobNames.stream().forEach(key -> {
-                        try {
-                            JobWithDetails job = jenkins.getJob(key);
-                            puts("Updating " + key);
-                            final List<Build> builds = job.details().getBuilds();
-
-                            buildCount[0] += builds.size();
-
-                            builds.stream().forEach(buildDetails -> {
-                                try {
-                                    final BuildWithDetails details = buildDetails.details();
-                                    Timestamp timestamp = new Timestamp(details.getTimestamp());
-
-                                    Date buildDate = new Date(timestamp.getTime());
-
-                                    int year = buildDate.getYear() + 1900;
-
-                                    if (!activity.containsKey(year)) {
-                                        activity.put(year, new int[12]);
-                                    }
-
-                                    int[] yearMap = activity.get(year);
-                                    yearMap[buildDate.getMonth()] += 1;
-
-                                    if (details.getResult() == null) {
-                                        buildCountsByResult.put(BuildResult.UNKNOWN, buildCountsByResult.get(BuildResult.UNKNOWN) + 1);
-                                    } else {
-                                        buildCountsByResult.put(details.getResult(), buildCountsByResult.get(details.getResult()) + 1);
-                                    }
-
-                                    byDuration.collect(details.getDuration());
-                                    final List<Map> actions = details.getActions();
-                                    actions.stream().filter(action -> action != null).forEach(action -> {
-                                        if (action.containsKey("causes")) {
-                                            List<HashMap> causes = (List<HashMap>) action.get("causes");
-
-                                            causes.stream().filter(cause -> cause.containsKey("shortDescription")).forEach(cause -> {
-                                                triggers.add((String) cause.get("shortDescription"));
-                                            });
-                                        }
-                                    });
-                                    completedBuilds.add(details);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                    dashboardServers.add(new HashMap<String, Object>() {
-                        {
-                            MainView serverInfo = jenkins.getServerInfo();
-                            put("name", serverInfo.getName());
-                            put("description", serverInfo.getDescription());
-                            put("uri", jenkins.getURI().toString());
-                            put("jobs", jobCount[0]);
-                            put("builds", buildCount[0]);
-                        }
-                    });
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                jenkins.collectMetrics(metrics);
             });
 
-            dashboard.put("title", "Kuona build analytics");
-            dashboard.put("servers", dashboardServers);
-            dashboard.put("lastUpdated", new Date());
-            dashboard.put("version", Application.VERSION);
-            dashboard.put("averageBuildTime", completedBuilds.stream().filter(b -> !b.isBuilding()).collect(Collectors.averagingInt(b -> b.getDuration())));
+            metrics.dashboard.put("title", "Kuona build analytics");
+            metrics.dashboard.put("servers", metrics.dashboardServers);
+            metrics.dashboard.put("lastUpdated", new Date());
+            metrics.dashboard.put("version", Application.VERSION);
+            metrics.dashboard.put("averageBuildTime", metrics.completedBuilds.stream().filter(b -> !b.isBuilding()).collect(Collectors.averagingInt(b -> b.getDuration())));
 
 
-            generateSparklines(dashboard, activity);
+            generateSparklines(metrics.dashboard, metrics.activity);
 
             FileTemplate.get(ACTIVITY_CHART_JS_FILENAME)
-                    .with(property("buildcounts", dayData(activity)))
+                    .with(property("buildcounts", dayData(metrics.activity)))
                     .renderTo(sitePath + File.separatorChar + ACTIVITY_CHART_JS_FILENAME);
 
-            writeBuildsByResult(sitePath, buildCountsByResult);
+            writeBuildsByResult(sitePath, metrics.buildCountsByResult);
 
             FileTemplate.get(BUILDS_BY_DURATION_JS_FILENAME)
-                    .with(property("bands", byDuration.getBands()))
+                    .with(property("bands", metrics.byDuration.getBands()))
                     .renderTo(sitePath + File.separatorChar + BUILDS_BY_DURATION_JS_FILENAME);
 
             FileTemplate.get(BUILDS_BY_TRIGGER_JS_FILENAME)
-                    .with(property("triggers", triggers.iterator()))
+                    .with(property("triggers", metrics.triggers.iterator()))
                     .renderTo(sitePath + File.separatorChar + BUILDS_BY_TRIGGER_JS_FILENAME);
 
-            writeDashboardDataFile(sitePath, dashboard);
+            writeDashboardDataFile(sitePath, metrics.dashboard);
 
             puts("\nUpdate Complete");
         } catch (Exception e) {

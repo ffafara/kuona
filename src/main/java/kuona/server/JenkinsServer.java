@@ -8,29 +8,25 @@ package kuona.server;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
-import kuona.model.Computer;
-import kuona.model.Job;
-import kuona.model.JobWithDetails;
-import kuona.model.MainView;
 import kuona.client.JenkinsClient;
+import kuona.controller.BuildMetrics;
+import kuona.model.*;
 import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.*;
+
+import static kuona.utils.Utils.puts;
 
 /**
  * The main starting point for interacting with a Jenkins server.
  */
-public class JenkinsServer {
+public class JenkinsServer implements BuildProcessor {
     private final JenkinsClient client;
 
-
-    public URI getURI() {
-       return client.getURI();
-    }
 
     /**
      * Create a new Jenkins server directly from an HTTP client (ADVANCED)
@@ -39,6 +35,10 @@ public class JenkinsServer {
      */
     public JenkinsServer(JenkinsClient client) {
         this.client = client;
+    }
+
+    public URI getURI() {
+        return client.getURI();
     }
 
     /**
@@ -119,5 +119,79 @@ public class JenkinsServer {
     private String encode(String pathPart) {
         // jenkins doesn't like the + for space, use %20 instead
         return URLEncoder.encode(pathPart).replaceAll("\\+", "%20");
+    }
+
+    public void collectMetrics(BuildMetrics metrics) {
+        try {
+            puts("Updating " + getURI());
+            final int[] jobCount = {0};
+            final int[] buildCount = {0};
+            Set<String> jobNames = getJobs().keySet();
+            jobCount[0] = jobNames.size();
+            jobNames.stream().forEach(key -> {
+                try {
+                    JobWithDetails job = getJob(key);
+                    puts("Updating " + key);
+                    final List<Build> builds = job.details().getBuilds();
+
+                    buildCount[0] += builds.size();
+
+                    builds.stream().forEach(buildDetails -> {
+                        try {
+                            final BuildWithDetails details = buildDetails.details();
+                            Timestamp timestamp = new Timestamp(details.getTimestamp());
+
+                            Date buildDate = new Date(timestamp.getTime());
+
+                            int year = buildDate.getYear() + 1900;
+
+                            if (!metrics.activity.containsKey(year)) {
+                                metrics.activity.put(year, new int[12]);
+                            }
+
+                            int[] yearMap = metrics.activity.get(year);
+                            yearMap[buildDate.getMonth()] += 1;
+
+                            if (details.getResult() == null) {
+                                metrics.buildCountsByResult.put(BuildResult.UNKNOWN, metrics.buildCountsByResult.get(BuildResult.UNKNOWN) + 1);
+                            } else {
+                                metrics.buildCountsByResult.put(details.getResult(), metrics.buildCountsByResult.get(details.getResult()) + 1);
+                            }
+
+                            metrics.byDuration.collect(details.getDuration());
+                            final List<Map> actions = details.getActions();
+                            actions.stream().filter(action -> action != null).forEach(action -> {
+                                if (action.containsKey("causes")) {
+                                    List<HashMap> causes = (List<HashMap>) action.get("causes");
+
+                                    causes.stream().filter(cause -> cause.containsKey("shortDescription")).forEach(cause -> {
+                                        metrics.triggers.add((String) cause.get("shortDescription"));
+                                    });
+                                }
+                            });
+                            metrics.completedBuilds.add(details);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            metrics.dashboardServers.add(new HashMap<String, Object>() {
+                {
+                    MainView serverInfo = getServerInfo();
+                    put("name", serverInfo.getName());
+                    put("description", serverInfo.getDescription());
+                    put("uri", getURI().toString());
+                    put("jobs", jobCount[0]);
+                    put("builds", buildCount[0]);
+                }
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

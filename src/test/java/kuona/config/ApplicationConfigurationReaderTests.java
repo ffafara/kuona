@@ -1,6 +1,6 @@
 package kuona.config;
 
-import kuona.server.JenkinsServer;
+import kuona.server.BuildProcessor;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public class ApplicationConfigurationReaderTests {
         ApplicationConfigurationReader configurationReader = new ApplicationConfigurationReader();
         KuonaSpec config = configurationReader.read(IOUtils.toInputStream(configText));
 
-        final List<JenkinsServer> servers = config.buildProcessors();
+        final List<BuildProcessor> servers = config.buildProcessors();
 
         assertThat(servers.size(), is(1));
     }

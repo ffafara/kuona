@@ -6,6 +6,7 @@ import kuona.client.JenkinsLocalClient;
 import kuona.model.Project;
 import kuona.processor.ProcessorBuilder;
 import kuona.processor.RepositoryProcessor;
+import kuona.server.BuildProcessor;
 import kuona.server.JenkinsServer;
 
 import java.net.URI;
@@ -39,7 +40,7 @@ public class KuonaSpec {
         return site.getPath();
     }
 
-    public List<JenkinsServer> buildProcessors() {
+    public List<BuildProcessor> buildProcessors() {
         return Lists.transform(servers, this::jenkinsServers);
     }
 
