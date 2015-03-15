@@ -7,7 +7,6 @@ import kuona.generator.Site;
 import kuona.generator.SiteGenerator;
 import kuona.server.KuonaServer;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,12 +20,6 @@ public class Application {
 
 
     public void run(String[] args) {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-
-        final URL resource = cl.getResource("templates/project/config.yml.st");
-
-        System.out.println("Resource address " + resource);
-
         if (args.length < 1) {
             if (configExists()) {
                 updateSite();
@@ -52,9 +45,12 @@ public class Application {
                         System.err.println("Configuration file " + ApplicationConfigurationReader.FILENAME + " not found");
                     }
                     break;
-                default:
-                    System.err.println("Unrecognised command " + args[0] + "\n");
+                case "help":
                     usage();
+                    break;
+                default:
+                    System.err.println("\n" + red("Error: ") + "Unrecognised command " + red(args[0]) + "\n");
+                    System.err.println("kuona help for usage instructions");
                     break;
             }
         }
@@ -91,7 +87,12 @@ public class Application {
 
         SiteGenerator generator = new SiteGenerator(new Site(true));
 
-        generator.generate("site", arguments.get(0));
+        if (arguments.size() == 0) {
+            System.err.println("\n" + red("Error: ") + "Missing site name for create\n");
+            System.err.println("kuona help for usage instructions");
+        } else {
+            generator.generate("site", arguments.get(0));
+        }
     }
 
     private void usage() {
@@ -107,6 +108,7 @@ public class Application {
                 "               file with the required CI settings.\n" +
                 blue("serve") + "          run the server on port 8080\n" +
                 blue("update") + "         update the site using configuration from config.yml\n" +
+                blue("help") + "           show this help\n" +
                 "[no-args]      runs update\n" +
                 "\n");
     }
