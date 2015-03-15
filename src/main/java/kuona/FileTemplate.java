@@ -4,9 +4,13 @@ import kuona.stringtemplate.Template;
 import org.apache.commons.lang3.tuple.Pair;
 import org.stringtemplate.v4.ST;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
 
+import static kuona.utils.ConsoleColors.blue;
 import static kuona.utils.Utils.puts;
 
 public class FileTemplate {
@@ -39,10 +43,12 @@ public class FileTemplate {
     }
 
     public void renderTo(String filepath) {
-        puts("Updating chart data " + filepath);
+        puts("Updating chart data " + blue(filepath));
 
         try {
-            FileWriter writer = new FileWriter(filepath);
+
+            Writer writer = new OutputStreamWriter(new FileOutputStream(filepath), Charset.forName("UTF-8").newEncoder());
+
             writer.write(st.render());
             writer.close();
         } catch (IOException e) {
