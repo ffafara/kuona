@@ -53,8 +53,7 @@ public class SubversionLogParserTests {
         assertThat(revisions.size(), is(1));
         assertThat(revisions.get(0).getChangedPaths().size(), is(1));
         assertThat(revisions.get(0).getChangedPaths().get(0).getPath(), is("/trunk/grappelli/templates/admin/edit_inline/stacked.html"));
-        assertThat(revisions.get(0).commitMessage(), is("message line 1\nmessage line 2\n\n"
-        ));
+        assertThat(revisions.get(0).commitMessage(), is("message line 1\nmessage line 2\n\n"));
     }
 
     @Test
