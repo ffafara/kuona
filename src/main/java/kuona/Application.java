@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static kuona.utils.ConsoleColors.*;
 import static kuona.utils.Utils.puts;
 
 public class Application {
@@ -94,18 +95,18 @@ public class Application {
     }
 
     private void usage() {
-        puts("kuona version " + VERSION + "\n" +
-                "Usage:\n" +
-                "kuona <command> [command-args]\n" +
+        puts(red("kuona") + " version " + green(VERSION) + "\n" +
+                yellow("Usage:\n") +
+                blue("    kuona") + " <command> [command-args]\n" +
                 "\n" +
                 "kuona run in a project folder without any parameters updates the project data by reading from the configured CI systems.\n" +
                 "\n" +
-                "Commands:\n" +
+                yellow("Commands:\n") +
                 "\n" +
-                "create name    Create a new projects in the named directory. Once created you can update the config.yml\n" +
+                blue("create") + " name    Create a new projects in the named directory. Once created you can update the config.yml\n" +
                 "               file with the required CI settings.\n" +
-                "serve          run the server on port 8080\n" +
-                "update         update the site using configuration from config.yml\n" +
+                blue("serve") + "          run the server on port 8080\n" +
+                blue("update") + "         update the site using configuration from config.yml\n" +
                 "[no-args]      runs update\n" +
                 "\n");
     }

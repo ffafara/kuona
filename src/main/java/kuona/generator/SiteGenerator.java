@@ -25,8 +25,6 @@ public class SiteGenerator {
     }
 
     public void generate(String resourceRoot, String name) {
-
-
         generateSite(resourceRoot, name + File.separatorChar + "_site");
 
         if (options != Options.NO_CONFIG) {
