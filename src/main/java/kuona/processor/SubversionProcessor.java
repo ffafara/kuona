@@ -25,7 +25,7 @@ public class SubversionProcessor implements RepositoryProcessor {
 
     public SubversionProcessor(RepositorySpec spec) {
         roots = new ArrayList<>();
-        Lists.newCopyOnWriteArrayList(spec.getRoots());
+//        Lists.newCopyOnWriteArrayList(spec.getRoots());
     }
 
     @Override

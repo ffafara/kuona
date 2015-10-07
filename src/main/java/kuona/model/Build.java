@@ -41,6 +41,9 @@ public class Build extends BaseModel {
     public BuildWithDetails details() throws IOException {
         return client.get(url, BuildWithDetails.class);
     }
+    public String detailsJSon() throws IOException {
+        return client.get(url);
+    }
 
     @Override
     public boolean equals(Object o) {

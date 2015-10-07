@@ -1,48 +1,38 @@
-/*
- * Copyright (c) 2013 Rising Oak LLC.
- *
- * Distributed under the MIT license: http://opensource.org/licenses/MIT
- */
-
 package kuona.processor;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import kuona.client.JenkinsClient;
 import kuona.client.JenkinsHttpClient;
-import kuona.client.JenkinsLocalClient;
-import kuona.config.BuildServerSpec;
-import kuona.controller.BuildMetrics;
 import kuona.model.*;
 import org.apache.http.client.HttpResponseException;
+import org.elasticsearch.client.Client;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static kuona.utils.Utils.puts;
 
-/**
- * The main starting point for interacting with a Jenkins server.
- */
-public class JenkinsProcessor implements BuildProcessor {
+public class JenkinsServer {
     private final JenkinsClient client;
 
-
-    public JenkinsProcessor(BuildServerSpec spec) {
+    public JenkinsServer(String url, String username, String password) {
         try {
-            final URI uri = new URI(spec.getUrl());
+            final URI uri = new URI(url);
             final Project project = new Project(uri);
-            this.client = new JenkinsLocalClient(project, new JenkinsHttpClient(project, uri, spec.getUsername(), spec.getPassword()));
+            this.client = new JenkinsHttpClient(project, uri, username, password);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public JenkinsProcessor(JenkinsClient client) {
+
+    public JenkinsServer(JenkinsClient client) {
         this.client = client;
     }
 
@@ -92,7 +82,7 @@ public class JenkinsProcessor implements BuildProcessor {
      * @return A single Job, null if not present
      * @throws IOException
      */
-    public JobWithDetails getJob(String jobName) throws IOException {
+    public JobWithDetails getJobDetails(String jobName) throws IOException {
         try {
             JobWithDetails job = client.get("/job/" + encode(jobName), JobWithDetails.class);
             job.setClient(client);
@@ -130,71 +120,42 @@ public class JenkinsProcessor implements BuildProcessor {
         return URLEncoder.encode(pathPart).replaceAll("\\+", "%20");
     }
 
-    public void collectMetrics(BuildMetrics metrics) {
+    public void collectMetrics(Client metrics) {
         try {
             puts("Updating " + getURI());
-            final int[] jobCount = {0};
-            final int[] buildCount = {0};
+
             Set<String> jobNames = getJobs().keySet();
-            jobCount[0] = jobNames.size();
+
             jobNames.stream().forEach(key -> {
                 try {
-                    JobWithDetails job = getJob(key);
+                    JobWithDetails job = getJobDetails(key);
                     puts("Updating " + key);
-                    final List<Build> builds = job.details().getBuilds();
 
-                    buildCount[0] += builds.size();
+                    final List<Build> builds = job.details().getBuilds();
 
                     builds.stream().forEach(buildDetails -> {
                         try {
                             final BuildWithDetails details = buildDetails.details();
-                            Timestamp timestamp = new Timestamp(details.getTimestamp());
 
-                            Date buildDate = new Date(timestamp.getTime());
+                            final String value = buildDetails.detailsJSon();
 
-                            int year = buildDate.getYear() + 1900;
+                            String entry = "{\n" +
+                                    "  \"job\": " + job.detailsJson() + " ,\n" +
+                                    "  \"build\": " + value + "\n" +
+                                    "}";
 
-                            if (!metrics.activity.containsKey(year)) {
-                                metrics.activity.put(year, new int[12]);
-                            }
 
-                            int[] yearMap = metrics.activity.get(year);
-                            yearMap[buildDate.getMonth()] += 1;
+                            metrics.prepareIndex("kuona", "build", details.getId())
+                                    .setSource(entry)
+                                    .execute();
+//                                    .actionGet();
 
-                            if (details.getResult() == null) {
-                                metrics.buildCountsByResult.put(BuildResult.UNKNOWN, metrics.buildCountsByResult.get(BuildResult.UNKNOWN) + 1);
-                            } else {
-                                metrics.buildCountsByResult.put(details.getResult(), metrics.buildCountsByResult.get(details.getResult()) + 1);
-                            }
-
-                            metrics.byDuration.collect(details.getDuration());
-                            final List<Map> actions = details.getActions();
-                            actions.stream().filter(action -> action != null).forEach(action -> {
-                                if (action.containsKey("causes")) {
-                                    List<HashMap> causes = (List<HashMap>) action.get("causes");
-
-                                    causes.stream().filter(cause -> cause.containsKey("shortDescription")).forEach(cause -> {
-                                        metrics.triggers.add((String) cause.get("shortDescription"));
-                                    });
-                                }
-                            });
-                            metrics.completedBuilds.add(details);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        } catch (Throwable e1) {
+                            e1.printStackTrace();
                         }
                     });
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-            });
-            metrics.dashboardServers.add(new HashMap<String, Object>() {
-                {
-                    MainView serverInfo = getServerInfo();
-                    put("name", serverInfo.getName());
-                    put("description", serverInfo.getDescription());
-                    put("uri", getURI().toString());
-                    put("jobs", jobCount[0]);
-                    put("builds", buildCount[0]);
                 }
             });
 
@@ -204,7 +165,6 @@ public class JenkinsProcessor implements BuildProcessor {
 
     }
 
-    @Override
     public String getName() {
         return "Jenkins";
     }

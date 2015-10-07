@@ -31,15 +31,16 @@ public class JenkinsLocalClient implements JenkinsClient {
     }
 
     @Override
-    public String get(String path, String contentType) throws IOException {
-        if (project.exists(path, contentType)) {
-            try {
-                return FileUtils.readFileToString(new File(project.contentPath(path, contentType)));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else
-            return delegate.get(path, contentType);
+    public String get(String path) throws IOException {
+        return null;
+//        if (project.exists(path)) {
+//            try {
+//                return FileUtils.readFileToString(new File(project.contentPath(path, contentType)));
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        } else
+//            return delegate.get(path, contentType);
     }
 
     @Override

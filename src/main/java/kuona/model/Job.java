@@ -33,6 +33,10 @@ public class Job extends BaseModel {
         return client.get(url, JobWithDetails.class);
     }
 
+    public String detailsJson() throws IOException {
+        return client.get(url);
+    }
+
     @Override
     public int hashCode() {
         return 342 + name.hashCode() + url.hashCode();

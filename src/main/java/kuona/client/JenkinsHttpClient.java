@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Scanner;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class JenkinsHttpClient implements JenkinsClient {
 
@@ -119,7 +119,7 @@ public class JenkinsHttpClient implements JenkinsClient {
      * @return the entity text
      * @throws IOException, HttpResponseException
      */
-    public String get(String path, String contentType) throws IOException {
+    public String get(String path) throws IOException {
         HttpGet getMethod = new HttpGet(api(path));
         HttpResponse response = client.execute(getMethod, localContext);
         try {

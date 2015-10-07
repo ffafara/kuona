@@ -1,7 +1,0 @@
-#!/bin/bash
-
-ANT_HOME=$PWD/tools/ant
-
-$ANT_HOME/bin/ant $@
-
-exit $?

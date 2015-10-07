@@ -95,11 +95,11 @@ public class BuildWithDetails extends Build {
     }
 
     public String getConsoleOutputText() throws IOException {
-        return client.get(url + "/logText/progressiveText", "console.txt");
+        return client.get(url + "/logText/progressiveText");
     }
 
     public String getConsoleOutputHtml() throws IOException {
-        return client.get(url + "/logText/progressiveHtml", "console.html");
+        return client.get(url + "/logText/progressiveHtml");
     }
 
     public InputStream downloadArtifact(Artifact a) throws IOException, URISyntaxException {
