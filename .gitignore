@@ -1,5 +1,6 @@
 out/
 build/
+target/
 test-site*/
 kuona*.jar
 .idea

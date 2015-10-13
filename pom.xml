@@ -4,6 +4,7 @@
     <groupId>kuona</groupId>
     <packaging>pom</packaging>
     <modules>
+        <module>maven-analyser</module>
         <module>web/app</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
@@ -32,6 +33,7 @@
                     <threadCount>10</threadCount>
                     <includes>
                         <include>**/*Tests.java</include>
+                        <include>**/*Test.java</include>
                     </includes>
                 </configuration>
                 <dependencies>

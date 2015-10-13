@@ -1,4 +1,4 @@
-package tese.web.controllers;
+package kuona.web.controllers;
 
 import spark.Request;
 import spark.Response;

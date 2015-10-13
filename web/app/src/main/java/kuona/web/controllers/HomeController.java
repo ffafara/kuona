@@ -1,4 +1,4 @@
-package tese.web.controllers;
+package kuona.web.controllers;
 
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;

@@ -1,4 +1,4 @@
-package tese.web.controllers;
+package kuona.web.controllers;
 
 import spark.Request;
 import spark.Response;
@@ -9,6 +9,7 @@ public class ProjectMavenPomController {
     }
 
     public Object post(Request request, Response response) throws Exception {
+        response.status(200);
         return request.params();
     }
 }

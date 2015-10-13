@@ -1,11 +1,11 @@
-package tese.web;
+package kuona.web;
 
 import com.google.gson.Gson;
+import kuona.web.controllers.ProjectMavenPomController;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
-import tese.web.controllers.HomeController;
-import tese.web.controllers.OrganisationsController;
-import tese.web.controllers.ProjectMavenPomController;
+import kuona.web.controllers.HomeController;
+import kuona.web.controllers.OrganisationsController;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
