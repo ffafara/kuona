@@ -6,6 +6,8 @@
 
     <modules>
         <module>tools/maven-analyser</module>
+        <module>tools/jenkins-analyser</module>
+        <module>tools/svn-analyser</module>
         <module>web/app</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
