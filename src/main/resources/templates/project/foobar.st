@@ -1,1 +1,0 @@
-foobar() ::= "Hello from foobar"
