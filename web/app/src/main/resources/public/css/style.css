@@ -4819,7 +4819,11 @@ a.compose-mail {
     width: 23%;
 }
 /* PROJECTS */
-.project-people,
+.project-description {
+    text-align: left;
+    vertical-align: top;
+    width:30%;
+}
 .project-actions {
     text-align: right;
     vertical-align: middle;

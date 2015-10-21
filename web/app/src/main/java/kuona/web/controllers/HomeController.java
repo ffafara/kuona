@@ -1,29 +1,20 @@
 package kuona.web.controllers;
 
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import kuona.web.Repository;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
 
 public class HomeController implements Route {
-    private Settings settings;
+    private Repository repository;
 
-    public HomeController(Settings settings) {
-        this.settings = settings;
+    public HomeController(Repository repository) {
+        this.repository = repository;
     }
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
-        Client client = new TransportClient(settings)
-                .addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
-        final GetResponse data = client.prepareGet("kuona", "config", "1")
-                .execute()
-                .actionGet();
-        return data.getSourceAsMap();
+        return repository.getConfig();
     }
 }

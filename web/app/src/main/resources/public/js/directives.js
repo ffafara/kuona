@@ -1,21 +1,15 @@
 /**
- * INSPINIA - Responsive Admin Theme
- *
- */
-
-
-/**
  * pageTitle - Directive for set Page title - mata title
  */
 function pageTitle($rootScope, $timeout) {
     return {
-        link: function(scope, element) {
-            var listener = function(event, toState, toParams, fromState, fromParams) {
+        link: function (scope, element) {
+            var listener = function (event, toState, toParams, fromState, fromParams) {
                 // Default title - load on Dashboard 1
-                var title = 'INSPINIA | Responsive Admin Theme';
+                var title = 'Kuona | IT analytics dashboard';
                 // Create your own title pattern
-                if (toState.data && toState.data.pageTitle) title = 'INSPINIA | ' + toState.data.pageTitle;
-                $timeout(function() {
+                if (toState.data && toState.data.pageTitle) title = 'Kuona | ' + toState.data.pageTitle;
+                $timeout(function () {
                     element.text(title);
                 });
             };
@@ -30,9 +24,9 @@ function pageTitle($rootScope, $timeout) {
 function sideNavigation($timeout) {
     return {
         restrict: 'A',
-        link: function(scope, element) {
+        link: function (scope, element) {
             // Call the metsiMenu plugin and plug it to sidebar navigation
-            $timeout(function(){
+            $timeout(function () {
                 element.metisMenu();
             });
         }
@@ -106,7 +100,7 @@ function iboxToolsFullScreen($timeout) {
                 $('body').toggleClass('fullscreen-ibox-mode');
                 button.toggleClass('fa-expand').toggleClass('fa-compress');
                 ibox.toggleClass('fullscreen');
-                setTimeout(function() {
+                setTimeout(function () {
                     $(window).trigger('resize');
                 }, 100);
             }
@@ -116,7 +110,7 @@ function iboxToolsFullScreen($timeout) {
 
 /**
  * minimalizaSidebar - Directive for minimalize sidebar
-*/
+ */
 function minimalizaSidebar($timeout) {
     return {
         restrict: 'A',
@@ -132,7 +126,7 @@ function minimalizaSidebar($timeout) {
                         function () {
                             $('#side-menu').fadeIn(500);
                         }, 100);
-                } else if ($('body').hasClass('fixed-sidebar')){
+                } else if ($('body').hasClass('fixed-sidebar')) {
                     $('#side-menu').hide();
                     setTimeout(
                         function () {
@@ -152,10 +146,9 @@ function minimalizaSidebar($timeout) {
  *
  * Pass all functions into module
  */
-angular
-    .module('inspinia')
-    .directive('pageTitle', pageTitle)
-    .directive('sideNavigation', sideNavigation)
-    .directive('iboxTools', iboxTools)
-    .directive('minimalizaSidebar', minimalizaSidebar)
-    .directive('iboxToolsFullScreen', iboxToolsFullScreen);
+kuona
+    .directive('pageTitle', pageTitle);
+//    .directive('sideNavigation', sideNavigation)
+//    .directive('iboxTools', iboxTools)
+//    .directive('minimalizaSidebar', minimalizaSidebar)
+//    .directive('iboxToolsFullScreen', iboxToolsFullScreen);

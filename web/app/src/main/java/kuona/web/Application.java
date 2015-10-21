@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import kuona.web.controllers.HomeController;
 import kuona.web.controllers.OrganisationsController;
 import kuona.web.controllers.ProjectMavenPomController;
+import kuona.web.controllers.ProjectsController;
 import org.apache.commons.cli.*;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
@@ -11,10 +12,7 @@ import org.elasticsearch.common.settings.Settings;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
-import static spark.SparkBase.port;
-import static spark.SparkBase.staticFileLocation;
+import static spark.Spark.*;
 
 public class Application {
     public static void main(String[] args) {
@@ -23,16 +21,28 @@ public class Application {
         port(Integer.parseInt(commandLine.getOptionValue('p', "9000")));
 
         Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "elasticsearch_graham").build();
+
+        final Repository repository = new Repository(settings);
+
+
         Gson gson = new Gson();
+
+        webSocket("/app/status", StatusSocket.class);
 
         staticFileLocation("/public");
 
-        get("/settomgs", new HomeController(settings), gson::toJson);
+        get("/settings", new HomeController(repository), gson::toJson);
+
+        final ProjectsController projectsController = new ProjectsController(repository);
+        get("/app/projects", projectsController::list, gson::toJson);
+        post("/app/projects", projectsController::create, gson::toJson);
 
         final OrganisationsController organisationsController = new OrganisationsController();
         get("/orgs", organisationsController::list, gson::toJson);
         get("/orgs/:org", organisationsController::get, gson::toJson);
         post("/orgs", organisationsController::post, gson::toJson);
+
+
 
         final ProjectMavenPomController mavenPomController = new ProjectMavenPomController();
         get("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::get, gson::toJson);
