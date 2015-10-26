@@ -7,7 +7,6 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
     });
 
     $stateProvider
-
         .state('index', {
             abstract: true,
             url: "/index",
@@ -23,19 +22,23 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             templateUrl: "views/minor.html",
             data: {pageTitle: 'Example view'}
         })
-        .state('index.new-project', {
-                url: "/new-project",
-                templateUrl: "views/admin/project.html",
-                data: {pageTitle: "New Project"}
-            }
-        )
         .state('index.dashboard', {
-                url: "/dashboard",
-                templateUrl: "views/dashboard.html",
-                data: {pageTitle: "Project Dashboard"}
-            }
-        )
+            url: "/dashboard",
+            templateUrl: "views/dashboard.html",
+            data: {pageTitle: 'Dashboard'}
+        })
+        .state('index.new-project', {
+            url: "/new-project",
+            templateUrl: "views/admin/project.html",
+            data: {pageTitle: "New Project"}
+        })
+        .state('index.gonogo-dashboard', {
+            url: "/gonogo",
+            templateUrl: "views/metric-dashboard.html",
+            data: {pageTitle: "Go/NoGo"}
+        });
 }
+
 kuona
     .config(config)
     .run(function ($rootScope, $state) {

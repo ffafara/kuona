@@ -8,6 +8,7 @@
         <module>tools/maven-analyser</module>
         <module>tools/jenkins-analyser</module>
         <module>tools/svn-analyser</module>
+        <module>tools/snapci-analyser</module>
         <module>web/app</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
@@ -88,6 +89,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>

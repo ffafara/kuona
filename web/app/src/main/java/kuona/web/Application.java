@@ -1,10 +1,7 @@
 package kuona.web;
 
 import com.google.gson.Gson;
-import kuona.web.controllers.HomeController;
-import kuona.web.controllers.OrganisationsController;
-import kuona.web.controllers.ProjectMavenPomController;
-import kuona.web.controllers.ProjectsController;
+import kuona.web.controllers.*;
 import org.apache.commons.cli.*;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
@@ -19,6 +16,10 @@ public class Application {
         final CommandLine commandLine = parseOptions(args);
 
         port(Integer.parseInt(commandLine.getOptionValue('p', "9000")));
+        ElasticSearchConfig elasticSearchConfig = new ElasticSearchConfig(
+                commandLine.getOptionValue("eh", "127.0.0.1"),
+                commandLine.getOptionValue("ep", "9200")
+        );
 
         Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "elasticsearch_graham").build();
 
@@ -43,16 +44,17 @@ public class Application {
         post("/orgs", organisationsController::post, gson::toJson);
 
 
-
         final ProjectMavenPomController mavenPomController = new ProjectMavenPomController();
         get("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::get, gson::toJson);
         post("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::post, gson::toJson);
+
+        final GoNoGoMetricController goNoGoMetricController = new GoNoGoMetricController(elasticSearchConfig);
+        get("/project/:project/metric/gonogo", goNoGoMetricController::get, gson::toJson);
     }
 
     protected static CommandLine parseOptions(String[] args) {
         try {
             Options options = commandLineOptions();
-
 
             CommandLineParser parser = new DefaultParser();
             return parser.parse(options, args);
@@ -76,6 +78,8 @@ public class Application {
 
         options.addOption(new Option("p", "port", true, "Server port for HTTP traffic (default 9000)"));
         options.addOption(new Option("h", "help", false, "Output this message"));
+        options.addOption(new Option("ep", "elasticport", true, "Server port for ElasticSearch (default 9200)"));
+        options.addOption(new Option("eh", "elastichost", true, "Hostname / IP address of ElasticSearch (default 127.0.0.1)"));
         return options;
     }
 
