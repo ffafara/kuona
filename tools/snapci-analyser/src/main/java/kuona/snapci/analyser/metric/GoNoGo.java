@@ -1,7 +1,8 @@
 package kuona.snapci.analyser.metric;
 
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import kuona.snapci.analyser.KuonaAppConfig;
 import kuona.snapci.analyser.model.Pipeline;
 import kuona.snapci.analyser.model.Stage;
@@ -10,7 +11,6 @@ import org.apache.http.client.fluent.Executor;
 import org.apache.http.entity.ContentType;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +19,7 @@ import static org.apache.http.client.fluent.Request.Post;
 
 public class GoNoGo implements Metric {
     private KuonaAppConfig kuonaAppConfig;
-    private String configJson;
+    private GoNoGoConfig config;
 
 
     @Override
@@ -28,8 +28,19 @@ public class GoNoGo implements Metric {
     }
 
     @Override
-    public void setMetricConfig(String config) {
-        this.configJson = config;
+    public void setMetricConfig(String rawConfig) throws IllegalArgumentException {
+        try {
+            Gson gson = new Gson();
+            this.config = gson.fromJson(rawConfig, GoNoGoConfig.class);
+            if (this.config == null)
+                throw new IllegalArgumentException("Cannot parse metric config");
+        } catch (JsonSyntaxException e) {
+            throw new IllegalArgumentException("Cannot parse metric config");
+        }
+    }
+
+    public GoNoGoConfig getConfig() {
+        return config;
     }
 
     @Override
@@ -42,7 +53,7 @@ public class GoNoGo implements Metric {
         saveMetricData(prepareMetric(pipeline));
     }
 
-    private void saveRawData(String data) {
+    protected void saveRawData(String data) {
         Executor executor = Executor.newInstance();
         try {
             executor.execute(Post(kuonaAppConfig.getRawDataURL())
@@ -62,18 +73,13 @@ public class GoNoGo implements Metric {
         }
     }
 
-    private String prepareMetric(Pipeline pipeline) {
+    public String prepareMetric(Pipeline pipeline) {
         List<Stage> validStages;
-        try {
-            JsonParser jsonParser = new JsonParser();
-            JsonElement metricStagesJson = jsonParser.parse(configJson).getAsJsonObject().get("stages").getAsJsonObject();
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<String>>() {
-            }.getType();
-            List<String> metricStages = gson.fromJson(metricStagesJson, type);
+        List<String> configStages = config.getStages();
+        if (configStages != null) {
             validStages = pipeline.getStages().stream()
-                    .filter(s -> metricStages.contains(s.getName())).collect(Collectors.toList());
-        } catch (JsonParseException e) {
+                    .filter(s -> configStages.contains(s.getName())).collect(Collectors.toList());
+        } else {
             validStages = pipeline.getStages();
         }
 
@@ -94,7 +100,6 @@ public class GoNoGo implements Metric {
             result.addProperty("status", "green");
         }
         return result.toString();
-
     }
 }
 

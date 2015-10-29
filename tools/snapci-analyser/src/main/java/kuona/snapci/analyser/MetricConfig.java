@@ -21,7 +21,10 @@ public class MetricConfig implements Serializable {
      * @param kuonaAppConfig    Location of the kuona web app and name of the metric
      */
     public MetricConfig(KuonaAppConfig kuonaAppConfig) {
-        Executor executor = Executor.newInstance();
+        this(kuonaAppConfig, Executor.newInstance());
+    }
+
+    public MetricConfig(KuonaAppConfig kuonaAppConfig, Executor executor) {
         try {
             String stringResponse = executor.execute(Get(kuonaAppConfig.getKuonaURL()))
                     .returnContent()

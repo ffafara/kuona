@@ -46,7 +46,7 @@ public class Main {
         }
     }
 
-    private static CommandLine parseOptions(String[] args) {
+    protected static CommandLine parseOptions(String[] args) {
         try {
             Options options = commandLineOptions();
 
@@ -54,10 +54,8 @@ public class Main {
             return parser.parse(options, args);
 
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        return null;
     }
 
     private static Options commandLineOptions() {
