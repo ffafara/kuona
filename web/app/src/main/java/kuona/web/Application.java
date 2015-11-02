@@ -3,7 +3,6 @@ package kuona.web;
 import com.google.gson.Gson;
 import kuona.web.controllers.*;
 import org.apache.commons.cli.*;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 
 import java.io.OutputStream;
@@ -21,7 +20,7 @@ public class Application {
                 commandLine.getOptionValue("ep", "9200")
         );
 
-        Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "elasticsearch_graham").build();
+        Settings settings = Settings.settingsBuilder().put("cluster.name", "elasticsearch").build();
 
         final Repository repository = new Repository(settings);
 
@@ -33,6 +32,9 @@ public class Application {
         staticFileLocation("/public");
 
         get("/settings", new HomeController(repository), gson::toJson);
+
+        final MetricsController metricsController = new MetricsController(repository);
+        post("/metrics", metricsController::create, gson::toJson);
 
         final ProjectsController projectsController = new ProjectsController(repository);
         get("/app/projects", projectsController::list, gson::toJson);
@@ -50,6 +52,7 @@ public class Application {
 
         final GoNoGoMetricController goNoGoMetricController = new GoNoGoMetricController(elasticSearchConfig);
         get("/project/:project/metric/gonogo", goNoGoMetricController::get, gson::toJson);
+
     }
 
     protected static CommandLine parseOptions(String[] args) {

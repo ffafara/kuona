@@ -1,6 +1,8 @@
 package kuona.snapci.analyser;
 
 import kuona.snapci.analyser.model.Pipeline;
+import kuona.snapci.analyser.utils.Deserializer;
+import kuona.snapci.analyser.utils.Utils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -11,18 +13,17 @@ import org.apache.http.client.utils.URIUtils;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import kuona.snapci.analyser.utils.Deserializer;
-import kuona.snapci.analyser.utils.Utils;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.Date;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -48,10 +49,9 @@ public class Collector implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         Utils.puts("Snap-Ci Collector Job running...");
         try {
-            Settings settings = ImmutableSettings.settingsBuilder()
+            Settings settings = Settings.settingsBuilder()
                     .put("cluster.name", elasticSearchConfig.getClusterName()).build();
-            Client elasticClient = new TransportClient(settings)
-                    .addTransportAddress(new InetSocketTransportAddress(elasticSearchConfig.getHost(), elasticSearchConfig.getPort()));
+            Client elasticClient = TransportClient.builder().build().addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticSearchConfig.getHost()), elasticSearchConfig.getPort()));
 
             URI uri = new URI(snapConfig.getUrl());
             HttpHost target = URIUtils.extractHost(uri);
@@ -64,22 +64,22 @@ public class Collector implements Job {
             try {
                 Object response = executor.execute(Request.Get(snapConfig.getUrl())).handleResponse(new SnapResponseHandler());
 
-                saveRawData(elasticClient, (String)response);
+                saveRawData(elasticClient, (String) response);
 
                 // Parse json to class
-                Pipeline pipeline = new Deserializer().objectFromString(Pipeline.class, (String)response);
+                Pipeline pipeline = new Deserializer().objectFromString(Pipeline.class, (String) response);
 
                 // Write stages info to ElasticSearch
                 pipeline.getStages().forEach(stage -> {
                     try {
                         elasticClient.prepareIndex(KUONA_METRICS_INDEX, "stagebuild")
                                 .setSource(jsonBuilder()
-                                                .startObject()
-                                                .field("date", new Date())
-                                                .field("name", stage.getName())
-                                                .field("project", stage.getProjectName())
-                                                .field("result", stage.getResult())
-                                                .endObject()
+                                        .startObject()
+                                        .field("date", new Date())
+                                        .field("name", stage.getName())
+                                        .field("project", stage.getProjectName())
+                                        .field("result", stage.getResult())
+                                        .endObject()
                                 )
                                 .execute();
                     } catch (IOException e) {
@@ -91,11 +91,11 @@ public class Collector implements Job {
                 // Write pipeline info to ElasticSearch
                 elasticClient.prepareIndex("kuona-metrics", "pipelinebuilstatus")
                         .setSource(jsonBuilder()
-                                        .startObject()
-                                        .field("name", "Palace-Intrigue")
-                                        .field("buildserver", "snap")
-                                        .field("status", pipeline.getResult())
-                                        .endObject()
+                                .startObject()
+                                .field("name", "Palace-Intrigue")
+                                .field("buildserver", "snap")
+                                .field("status", pipeline.getResult())
+                                .endObject()
                         )
                         .execute();
 
@@ -104,6 +104,8 @@ public class Collector implements Job {
                 ie.printStackTrace();
             }
         } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
             e.printStackTrace();
         }
 
