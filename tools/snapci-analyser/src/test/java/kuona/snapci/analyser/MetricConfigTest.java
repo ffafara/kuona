@@ -34,7 +34,7 @@ public class MetricConfigTest {
                 "},\n" +
                 "\"metric\": {\n" +
                 "\"type\": \"GoNoGo\",\n" +
-                "\"config\": \"testconfig\"\n" +
+                "\"config\": {\"testkey\": \"testvalue\"}\n" +
                 "}\n" +
                 "}";
 
@@ -60,7 +60,7 @@ public class MetricConfigTest {
     public void shouldParseMetricConfigurationFromKuona() throws IOException, URISyntaxException {
         MetricConfig testMetricConfig = new MetricConfig(kuonaAppConfig, mockExecutor);
 
-        assertThat(testMetricConfig.getConfig(), is("testconfig"));
+        assertThat(testMetricConfig.getConfig(), is("{\"testkey\":\"testvalue\"}"));
         assertThat(testMetricConfig.getMetricType(), is("GoNoGo"));
     }
 

@@ -40,11 +40,10 @@ public class Collector implements Job {
         try {
             Object response = executor.execute(Request.Get(snapConfig.getUrl())).handleResponse(new SnapResponseHandler());
 
-            Metric metric = (Metric) Class.forName(metricConfig.getMetricType()).newInstance();
-            metric.setKuonaAppConfig(kuonaAppConfig);
+            Metric metric = (Metric) Class.forName("kuona.snapci.analyser.metric." + metricConfig.getMetricType()).newInstance();
+                    metric.setKuonaAppConfig(kuonaAppConfig);
             metric.setMetricConfig(metricConfig.getConfig());
             metric.analyze((String) response);
-
         } catch (IOException | IllegalAccessException | InstantiationException | ClassNotFoundException ie) {
             ie.printStackTrace();
         }

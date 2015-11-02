@@ -21,10 +21,16 @@ public class Application {
                 commandLine.getOptionValue("ep", "9200")
         );
 
-        Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "elasticsearch_graham").build();
+        Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "elasticsearch").build();
 
         final Repository repository = new Repository(settings);
 
+//        try {
+//            CollectorLauncher.launch();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            System.out.println(e);
+//        }
 
         Gson gson = new Gson();
 
@@ -48,8 +54,11 @@ public class Application {
         get("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::get, gson::toJson);
         post("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::post, gson::toJson);
 
-        final GoNoGoMetricController goNoGoMetricController = new GoNoGoMetricController(elasticSearchConfig);
-        get("/project/:project/metric/gonogo", goNoGoMetricController::get, gson::toJson);
+        final MetricsController metricsController = new MetricsController(repository);
+        get("/app/metrics/:metric", metricsController::getMetric, gson::toJson);
+        get("/metrics/:metric/config", metricsController::getConfig, gson::toJson);
+        post("/metrics/:metric/rawdata", metricsController::saveRawData, gson::toJson);
+        post("/metrics/:metric/data", metricsController::saveData, gson::toJson);
     }
 
     protected static CommandLine parseOptions(String[] args) {

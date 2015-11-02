@@ -45,7 +45,7 @@ public class MetricConfig implements Serializable {
 
             JsonObject metricJson = jsonObject.getAsJsonObject("metric");
             this.metricType = metricJson.get("type").getAsString();
-            this.config = metricJson.get("config").getAsString();
+            this.config = metricJson.get("config").getAsJsonObject().toString();
 
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();

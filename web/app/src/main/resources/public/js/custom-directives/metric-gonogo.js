@@ -3,10 +3,10 @@ function metricGonogo() {
         restrict: 'E',
         templateUrl: 'views/partial/gonogo.html',
         scope: {
-            project: "@"
+            metric: "@"
         },
         controller: function ($scope, $http) {
-            $http({method: 'GET', url: '/project/'+ $scope.project +'/metric/gonogo'})
+            $http({method: 'GET', url: '/app/metrics/'+ $scope.metric})
                 .success(function(data) {
                     $scope.data = data;
                     switch(data.status) {
