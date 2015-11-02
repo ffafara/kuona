@@ -3,7 +3,6 @@ package kuona.web;
 import com.google.gson.Gson;
 import kuona.web.controllers.*;
 import org.apache.commons.cli.*;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 
 import java.io.OutputStream;
@@ -18,10 +17,14 @@ public class Application {
         port(Integer.parseInt(commandLine.getOptionValue('p', "9000")));
         ElasticSearchConfig elasticSearchConfig = new ElasticSearchConfig(
                 commandLine.getOptionValue("eh", "127.0.0.1"),
-                commandLine.getOptionValue("ep", "9200")
+                commandLine.getOptionValue("ep", "9300")
         );
 
-        Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "elasticsearch").build();
+        Settings settings = Settings.settingsBuilder()
+                .put("cluster.name", "elasticsearch")
+                .put("network.host", commandLine.getOptionValue("eh", "localhost"))
+                .put("network.transport.tcp.port", commandLine.getOptionValue("ep", "9300"))
+                .build();
 
         final Repository repository = new Repository(settings);
 
@@ -40,6 +43,9 @@ public class Application {
 
         get("/settings", new HomeController(repository), gson::toJson);
 
+        final MetricsController metricsController = new MetricsController(repository);
+        post("/metrics", metricsController::create, gson::toJson);
+
         final ProjectsController projectsController = new ProjectsController(repository);
         get("/app/projects", projectsController::list, gson::toJson);
         post("/app/projects", projectsController::create, gson::toJson);
@@ -54,7 +60,7 @@ public class Application {
         get("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::get, gson::toJson);
         post("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::post, gson::toJson);
 
-        final MetricsController metricsController = new MetricsController(repository);
+
         get("/app/metrics/:metric", metricsController::getMetric, gson::toJson);
         get("/metrics/:metric/config", metricsController::getConfig, gson::toJson);
         post("/metrics/:metric/rawdata", metricsController::saveRawData, gson::toJson);
@@ -87,7 +93,7 @@ public class Application {
 
         options.addOption(new Option("p", "port", true, "Server port for HTTP traffic (default 9000)"));
         options.addOption(new Option("h", "help", false, "Output this message"));
-        options.addOption(new Option("ep", "elasticport", true, "Server port for ElasticSearch (default 9200)"));
+        options.addOption(new Option("ep", "elasticport", true, "Server port for ElasticSearch (default 9300)"));
         options.addOption(new Option("eh", "elastichost", true, "Hostname / IP address of ElasticSearch (default 127.0.0.1)"));
         return options;
     }

@@ -1,4 +1,4 @@
-package kuona.jenkins.analyser.utils;
+package kuona.common.utils;
 
 public class ConsoleColors {
     public static final String ANSI_RESET = "\u001B[0m";
