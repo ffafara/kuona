@@ -38,21 +38,4 @@ public class PostResults {
         }
 
     }
-
-    public DataOutputStream open() {
-        try {
-            HttpURLConnection con = (HttpURLConnection) resultUri.openConnection();
-
-            con.setRequestMethod("POST");
-            con.setRequestProperty("User-Agent", USER_AGENT);
-            con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-            con.setRequestProperty("Content-Type", "application/json");
-
-            con.setDoOutput(true);
-            return new DataOutputStream(con.getOutputStream());
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to post to " + resultUri + '\n' + e.toString(), e);
-        }
-    }
-
 }

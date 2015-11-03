@@ -3,7 +3,6 @@ package kuona.web;
 import com.google.gson.Gson;
 import kuona.web.controllers.*;
 import org.apache.commons.cli.*;
-import org.elasticsearch.common.settings.Settings;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -14,15 +13,24 @@ public class Application {
     public static void main(String[] args) {
         final CommandLine commandLine = parseOptions(args);
 
+        if (commandLine.hasOption('h')) {
+            printHelp(System.out);
+            return;
+        }
+
         port(Integer.parseInt(commandLine.getOptionValue('p', "9000")));
+
         ElasticSearchConfig elasticSearchConfig = new ElasticSearchConfig(
                 commandLine.getOptionValue("eh", "127.0.0.1"),
                 commandLine.getOptionValue("ep", "9200")
         );
 
-        Settings settings = Settings.settingsBuilder().put("cluster.name", "elasticsearch").build();
+        String[] elasticSearchHosts = {"localhost:9300"};
+        if (commandLine.hasOption('e')) {
+            elasticSearchHosts = commandLine.getOptionValues('e');
+        }
 
-        final Repository repository = new Repository(settings);
+        final Repository repository = new Repository(elasticSearchHosts);
 
 
         Gson gson = new Gson();
@@ -72,7 +80,7 @@ public class Application {
     protected static void printHelp(OutputStream output) {
         PrintWriter writer = new PrintWriter(output);
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp(writer, 80, "java -jar kuona-maven-analyser.jar [options] <paths>", "\nOptions", commandLineOptions(), 3, 2, "\n See http://kuona.io");
+        formatter.printHelp(writer, 80, "java -jar web-app.jar [options] <paths>", "\nOptions", commandLineOptions(), 3, 2, "\n See http://kuona.io");
         writer.close();
     }
 
@@ -81,6 +89,7 @@ public class Application {
 
         options.addOption(new Option("p", "port", true, "Server port for HTTP traffic (default 9000)"));
         options.addOption(new Option("h", "help", false, "Output this message"));
+        options.addOption(new Option("e", "elastic", true, "Elastic search API end point. For a cluster define a parameter for each"));
         options.addOption(new Option("ep", "elasticport", true, "Server port for ElasticSearch (default 9200)"));
         options.addOption(new Option("eh", "elastichost", true, "Hostname / IP address of ElasticSearch (default 127.0.0.1)"));
         return options;

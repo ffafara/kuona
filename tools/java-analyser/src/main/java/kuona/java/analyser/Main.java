@@ -34,7 +34,11 @@ public class Main {
                 return;
             }
 
-            URL resultUrl = new URL(options.getOptionValue('r'));
+            URL resultUrl = null;
+
+            if (options.hasOption('r')) {
+                resultUrl = new URL(options.getOptionValue('r'));
+            }
 
             final String[] files = options.getArgs();
 
@@ -65,10 +69,14 @@ public class Main {
             metric.put("sources", sources);
             metric.put("dataType", "source-code");
 
-            final PostResults postResults = new PostResults(resultUrl);
-
             Gson g = new Gson();
-            postResults.post(g.toJson(metric).getBytes());
+            if (resultUrl != null) {
+                final PostResults postResults = new PostResults(resultUrl);
+
+                postResults.post(g.toJson(metric).getBytes());
+            } else {
+                System.out.println(g.toJson(metric));
+            }
 
         } catch (RuntimeException re) {
             System.err.println(re.toString());
@@ -103,7 +111,6 @@ public class Main {
     private static Options commandLineOptions() {
         Options options = new Options();
         final Option resultOption = new Option("r", "result", true, "URL of the build server");
-        resultOption.setRequired(true);
         options.addOption(resultOption);
 
         options.addOption(new Option("h", "help", false, "Output this message"));
