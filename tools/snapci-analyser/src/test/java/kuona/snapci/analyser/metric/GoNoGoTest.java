@@ -83,7 +83,7 @@ public class GoNoGoTest {
         goNoGo.setMetricConfig(testConfig);
         goNoGo.setKuonaAppConfig(testKuonaAppConfig);
 
-        final String expected = "\"metric\":\"test-gonogo-metric\",\"metricType\":\"GoNoGo\"";
+        final String expected = "\"name\":\"test-gonogo-metric\",\"metricType\":\"GoNoGo\"";
         String actual = goNoGo.prepareMetric(testPipeline);
         JsonParser jsonParser = new JsonParser();
         JsonElement actualJson = jsonParser.parse(actual);

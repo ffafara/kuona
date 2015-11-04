@@ -21,7 +21,7 @@ public class MetricsController {
 
         System.out.println(request.body());
 
-        final Metric metric = new Metric(hashMap.get("timestamp").toString(), request.body().getBytes());
+        final Metric metric = new Metric(hashMap.get("timestamp").toString(), hashMap.get("name").toString(), request.body().getBytes());
 
         repository.save(metric);
 
@@ -41,15 +41,6 @@ public class MetricsController {
         String metric = request.params(":metric");
         String data = request.body();
         repository.saveMetricRawData(metric, data);
-        response.status(201);
-        return null;
-    }
-
-    public Object saveData(Request request, Response response) {
-
-        String metric = request.params(":metric");
-        String data = request.body();
-        repository.saveMetricData(metric, data);
         response.status(201);
         return null;
     }

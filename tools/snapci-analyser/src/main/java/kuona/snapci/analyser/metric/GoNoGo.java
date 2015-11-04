@@ -89,7 +89,7 @@ public class GoNoGo implements Metric {
 
         JsonObject result = new JsonObject();
         result.addProperty("timestamp", new Date().getTime());
-        result.addProperty("metric", kuonaAppConfig.getMetricName());
+        result.addProperty("name", kuonaAppConfig.getMetricName());
         result.addProperty("metricType", "GoNoGo");
 
         if (red > 0) {

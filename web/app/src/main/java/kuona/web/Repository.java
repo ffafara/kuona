@@ -10,8 +10,10 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Instant;
@@ -57,16 +59,6 @@ public class Repository {
         return data.getSourceAsMap();
     }
 
-    public void saveMetricData(String metric, String data) {
-        IndexResponse response = client.prepareIndex("metric", metric)
-                .setCreate(true)
-                .setSource(data)
-                .execute()
-                .actionGet();
-        if (!response.isCreated()) {
-            //TODO: throw/log error?
-        }
-    }
 
     public void saveMetricRawData(String metric, String data) {
         IndexResponse response = client.prepareIndex("rawdata", metric)
@@ -76,13 +68,14 @@ public class Repository {
                 .execute()
                 .actionGet();
         if (!response.isCreated()) {
-            //TODO: throw/log error?
+            //TODO: throw/log error
         }
     }
 
     public Object getMetric(String metric) {
-        SearchResponse response = client.prepareSearch("metric")
-                .setTypes(metric)
+        SearchResponse response = client.prepareSearch("kuona")
+                .setTypes("metric")
+                .setQuery(QueryBuilders.matchQuery("name", metric))
                 .setSize(1)
                 .addSort("timestamp", SortOrder.DESC)
                 .execute()

@@ -15,10 +15,6 @@ public class Application {
         final CommandLine commandLine = parseOptions(args);
 
         port(Integer.parseInt(commandLine.getOptionValue('p', "9000")));
-        ElasticSearchConfig elasticSearchConfig = new ElasticSearchConfig(
-                commandLine.getOptionValue("eh", "127.0.0.1"),
-                commandLine.getOptionValue("ep", "9300")
-        );
 
         Settings settings = Settings.settingsBuilder()
                 .put("cluster.name", "elasticsearch")
@@ -45,6 +41,9 @@ public class Application {
 
         final MetricsController metricsController = new MetricsController(repository);
         post("/metrics", metricsController::create, gson::toJson);
+        post("/metrics/:metric/rawdata", metricsController::saveRawData, gson::toJson);
+        get("/metrics/:metric/config", metricsController::getConfig, gson::toJson);
+        get("/app/metrics/:metric", metricsController::getMetric, gson::toJson);
 
         final ProjectsController projectsController = new ProjectsController(repository);
         get("/app/projects", projectsController::list, gson::toJson);
@@ -61,10 +60,7 @@ public class Application {
         post("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::post, gson::toJson);
 
 
-        get("/app/metrics/:metric", metricsController::getMetric, gson::toJson);
-        get("/metrics/:metric/config", metricsController::getConfig, gson::toJson);
-        post("/metrics/:metric/rawdata", metricsController::saveRawData, gson::toJson);
-        post("/metrics/:metric/data", metricsController::saveData, gson::toJson);
+
     }
 
     protected static CommandLine parseOptions(String[] args) {
