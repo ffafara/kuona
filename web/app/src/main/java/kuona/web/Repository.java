@@ -15,6 +15,8 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
 
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.time.Instant;
 
@@ -23,11 +25,27 @@ public class Repository {
 
     private Client client;
 
-    public Repository(Settings settings) {
+    public Repository(String[] hosts) {
         client = null;
         try {
-            client = TransportClient.builder().build()
-                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(settings.get("network.host")), settings.getAsInt("network.transport.tcp.port", 9300)));
+            Settings settings = Settings.settingsBuilder()
+                    .put("cluster.name", "elasticsearch")
+                    .build();
+
+            final TransportClient transportClient = TransportClient.builder().settings(settings).build();
+
+            for (String host : hosts) {
+                try {
+                    URI uri = new URI("my://" + host);
+
+                    transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(uri.getHost()), uri.getPort()));
+                } catch (URISyntaxException e) {
+                    System.err.println(host + " can't be used as an elastic search endpoint: " + e.getMessage());
+                }
+            }
+
+            client = transportClient;
+
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
