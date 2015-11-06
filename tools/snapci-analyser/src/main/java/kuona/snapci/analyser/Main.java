@@ -13,21 +13,16 @@ public class Main {
         puts("Kuona snap-ci analyser");
 
         CommandLine options = parseOptions(args);
-        ElasticSearchConfig elasticSearchConfig = new ElasticSearchConfig(
-                options.getOptionValue('n', "elasticsearch"),
-                options.getOptionValue('h', "127.0.0.1"),
-                Integer.parseInt(options.getOptionValue('p', "9200"))
+        KuonaAppConfig kuonaAppConfig = new KuonaAppConfig(
+                options.getOptionValue('u'),
+                options.getOptionValue('n')
         );
 
-        SnapConfig snapConfig = new SnapConfig(
-                options.getOptionValue("url"),
-                options.getOptionValue("user"),
-                options.getOptionValue("pass")
-        );
+        MetricConfig config = new MetricConfig(kuonaAppConfig);
 
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put("elasticSearchConfig", elasticSearchConfig);
-        jobDataMap.put("snapConfig", snapConfig);
+        jobDataMap.put("kuonaAppConfig", kuonaAppConfig);
+        jobDataMap.put("metricConfig", config);
 
         JobDetail job = JobBuilder.newJob(Collector.class)
                 .withIdentity("SnapCiCollector", "collectors")
@@ -51,7 +46,7 @@ public class Main {
         }
     }
 
-    private static CommandLine parseOptions(String[] args) {
+    protected static CommandLine parseOptions(String[] args) {
         try {
             Options options = commandLineOptions();
 
@@ -59,28 +54,22 @@ public class Main {
             return parser.parse(options, args);
 
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        return null;
     }
 
     private static Options commandLineOptions() {
         Options options = new Options();
 
-        options.addOption(new Option("n", "clustername", true, "ElasticSearch cluster name"));
-        options.addOption(new Option("h", "host", true, "ElasticSearch host"));
-        options.addOption(new Option("p", "port", true, "ElasticSearch port"));
-        Option snapURL = new Option("url", true, "Snap-Ci URL");
-        snapURL.setRequired(true);
-        options.addOption(snapURL);
-        Option snapUser = new Option("user", true, "Snap-Ci user");
+        Option kuonaURL = new Option("u", "url", true, "URL in Kuona Web App to use for this collector");
+        kuonaURL.setRequired(true);
+        options.addOption(kuonaURL);
+        Option snapUser = new Option("n", "name", true, "Metric name");
         snapUser.setRequired(true);
         options.addOption(snapUser);
-        Option snapPass = new Option("pass", true, "Snap-Ci password (key)");
-        snapPass.setRequired(true);
-        options.addOption(snapPass);
+
         return options;
     }
+
 }
 

@@ -20,11 +20,6 @@ public class Application {
 
         port(Integer.parseInt(commandLine.getOptionValue('p', "9000")));
 
-        ElasticSearchConfig elasticSearchConfig = new ElasticSearchConfig(
-                commandLine.getOptionValue("eh", "127.0.0.1"),
-                commandLine.getOptionValue("ep", "9200")
-        );
-
         String[] elasticSearchHosts = {"localhost:9300"};
         if (commandLine.hasOption('e')) {
             elasticSearchHosts = commandLine.getOptionValues('e');
@@ -32,6 +27,12 @@ public class Application {
 
         final Repository repository = new Repository(elasticSearchHosts);
 
+//        try {
+//            CollectorLauncher.launch();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            System.out.println(e);
+//        }
 
         Gson gson = new Gson();
 
@@ -43,6 +44,9 @@ public class Application {
 
         final MetricsController metricsController = new MetricsController(repository);
         post("/metrics", metricsController::create, gson::toJson);
+        post("/metrics/:metric/rawdata", metricsController::saveRawData, gson::toJson);
+        get("/metrics/:metric/config", metricsController::getConfig, gson::toJson);
+        get("/app/metrics/:metric", metricsController::getMetric, gson::toJson);
 
         final ProjectsController projectsController = new ProjectsController(repository);
         get("/app/projects", projectsController::list, gson::toJson);
@@ -58,8 +62,7 @@ public class Application {
         get("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::get, gson::toJson);
         post("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::post, gson::toJson);
 
-        final GoNoGoMetricController goNoGoMetricController = new GoNoGoMetricController(elasticSearchConfig);
-        get("/project/:project/metric/gonogo", goNoGoMetricController::get, gson::toJson);
+
 
     }
 
@@ -89,9 +92,10 @@ public class Application {
 
         options.addOption(new Option("p", "port", true, "Server port for HTTP traffic (default 9000)"));
         options.addOption(new Option("h", "help", false, "Output this message"));
+
         options.addOption(new Option("e", "elastic", true, "Elastic search API end point. For a cluster define a parameter for each"));
-        options.addOption(new Option("ep", "elasticport", true, "Server port for ElasticSearch (default 9200)"));
-        options.addOption(new Option("eh", "elastichost", true, "Hostname / IP address of ElasticSearch (default 127.0.0.1)"));
+        options.addOption(new Option("c", "cluster", false, "Elastic serach cluster name. Defaults to 'elasticsearch'"));
+
         return options;
     }
 
