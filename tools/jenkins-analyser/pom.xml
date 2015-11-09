@@ -68,7 +68,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>kuona.jenkins.analyser.kuona.snapci.analyser.Main</mainClass>
+                                    <mainClass>kuona.jenkins.analyser.Main</mainClass>
                                 </transformer>
                             </transformers>
                             <filters>
