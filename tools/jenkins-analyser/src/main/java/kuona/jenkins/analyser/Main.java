@@ -52,7 +52,8 @@ public class Main {
             }
 
         } catch (ParseException e) {
-            e.printStackTrace();
+            System.err.println("Error " + e.getMessage());
+            printHelp(System.out);
         }
         return result;
     }
