@@ -12,6 +12,7 @@
         <module>tools/snapci-analyser</module>
         <module>web/app</module>
         <module>tools/java-analyser</module>
+        <module>tools/gocd-analyzer</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
 
