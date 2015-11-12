@@ -3,7 +3,7 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
 
     $ocLazyLoadProvider.config({
         // Set to true if you want to see what and when is dynamically loaded
-        debug: false
+        debug: true
     });
 
     $stateProvider
@@ -29,8 +29,14 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
         })
         .state('index.new-project', {
             url: "/new-project",
+            controller: 'ProjectEditController',
             templateUrl: "views/admin/project.html",
             data: {pageTitle: "New Project"}
+        })
+        .state('index.configure-metric', {
+            url: "/configure-metric",
+            controller: 'MetricConfigController',
+            templateUrl: "views/admin/metricConfig.html",
         })
         .state('index.gonogo-dashboard', {
             url: "/gonogo",

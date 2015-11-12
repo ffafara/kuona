@@ -6,6 +6,7 @@ import kuona.web.model.Metric;
 import kuona.web.response.MetricsResponse;
 import spark.Request;
 import spark.Response;
+
 import java.util.HashMap;
 
 public class MetricsController {
@@ -30,6 +31,11 @@ public class MetricsController {
         return new MetricsResponse("created");
     }
 
+    public Object getConfigList(Request request, Response response) {
+        return repository.getMetricConfigList();
+    }
+
+
     public Object getConfig(Request request, Response response) {
 
         String metric = request.params(":metric");
@@ -47,8 +53,14 @@ public class MetricsController {
 
     public Object getMetric(Request request, Response response) {
 
-        String metric = request.params(":metric");
-        return repository.getMetric(metric);
+        String metricName = request.params(":metric");
+
+        Object metric = repository.getMetric(metricName);
+        if (metric == null) {
+            response.status(404);
+            return new MetricsResponse("Not found");
+        } else
+            return metric;
     }
 
 }

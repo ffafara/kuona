@@ -36,7 +36,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>kuona.maven.analyser.Main</mainClass>
+                                    <mainClass>kuona.gocd.analyser.Main</mainClass>
                                 </transformer>
                             </transformers>
                             <filters>

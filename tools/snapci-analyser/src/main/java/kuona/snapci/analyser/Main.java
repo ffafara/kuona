@@ -77,12 +77,12 @@ public class Main {
     private static Options commandLineOptions() {
         Options options = new Options();
 
-        Option kuonaURL = new Option("u", "url", true, "URL in Kuona Web App to use for this collector");
-        kuonaURL.setRequired(true);
-        options.addOption(kuonaURL);
-        Option snapUser = new Option("n", "name", true, "Metric name");
-        snapUser.setRequired(true);
-        options.addOption(snapUser);
+        Option configUrl = new Option("u", "url", true, "URL for collector to get configuration from Kuona Web App");
+        configUrl.setRequired(true);
+        options.addOption(configUrl);
+        Option metricName = new Option("n", "name", true, "Metric name");
+        metricName.setRequired(true);
+        options.addOption(metricName);
 
         return options;
     }

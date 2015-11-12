@@ -46,6 +46,8 @@ public class Application {
         post("/metrics", metricsController::create, gson::toJson);
         post("/metrics/:metric/rawdata", metricsController::saveRawData, gson::toJson);
         get("/metrics/:metric/config", metricsController::getConfig, gson::toJson);
+        get("/app/metrics/configs", metricsController::getConfigList, gson::toJson);
+        get("/app/metrics/configs/:metric", metricsController::getConfig, gson::toJson);
         get("/app/metrics/:metric", metricsController::getMetric, gson::toJson);
 
         final ProjectsController projectsController = new ProjectsController(repository);
@@ -61,8 +63,6 @@ public class Application {
         final ProjectMavenPomController mavenPomController = new ProjectMavenPomController();
         get("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::get, gson::toJson);
         post("/orgs/:org/projects/:project/metrics/java/maven/dependencies", mavenPomController::post, gson::toJson);
-
-
 
     }
 

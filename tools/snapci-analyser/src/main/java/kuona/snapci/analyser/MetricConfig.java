@@ -36,16 +36,16 @@ public class MetricConfig implements Serializable {
             kuonaAppConfig.setMetricURL(jsonObject.get("metricURL").getAsString());
             kuonaAppConfig.setRawDataURL(jsonObject.get("rawDataURL").getAsString());
 
-            JsonObject snapJson = jsonObject.getAsJsonObject("snap");
+//            JsonObject snapJson = jsonObject.getAsJsonObject("snap");
             this.snapConfig = new SnapConfig(
-                    snapJson.get("url").getAsString(),
-                    snapJson.get("user").getAsString(),
-                    snapJson.get("password").getAsString()
+                    jsonObject.get("url").getAsString(),
+                    jsonObject.get("user").getAsString(),
+                    jsonObject.get("password").getAsString()
             );
 
-            JsonObject metricJson = jsonObject.getAsJsonObject("metric");
-            this.metricType = metricJson.get("type").getAsString();
-            this.config = metricJson.get("config").getAsJsonObject().toString();
+//            JsonObject metricJson = jsonObject.getAsJsonObject("metric");
+            this.metricType = jsonObject.get("type").getAsString();
+            this.config = jsonObject.get("config").getAsJsonObject().toString();
 
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();

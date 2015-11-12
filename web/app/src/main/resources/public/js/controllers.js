@@ -23,3 +23,27 @@ kuona.controller('ProjectListController', ['$scope', '$http', function ($scope, 
             $scope.projects = res.data;
         });
 }]);
+
+function ProjectEditController($scope, $http, $state) {
+    $scope.cancelEdit = function() {
+            $state.go('index.dashboard');
+        }
+}
+
+kuona.controller('ProjectEditController', ProjectEditController);
+
+function MetricConfigController($scope, $http, $state) {
+    $scope.metricTypes = ["GoNoGo", "Other-Metric"];
+    $scope.buildServers = ["snap", "gocd"];
+    $scope.metricConfig = {};
+
+    $scope.cancelEdit = function() {
+            $state.go('index.dashboard');
+        }
+
+    $scope.submit = function(metricConfig) {
+        console.log(metricConfig);
+    }
+};
+
+kuona.controller('MetricConfigController', MetricConfigController);

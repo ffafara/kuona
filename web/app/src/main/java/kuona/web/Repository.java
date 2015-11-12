@@ -1,7 +1,11 @@
 package kuona.web;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import kuona.web.model.Metric;
+import kuona.web.model.MetricConfig;
 import kuona.web.model.Project;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -10,15 +14,21 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.mapper.MergeMappingException;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 
 public class Repository {
@@ -45,6 +55,7 @@ public class Repository {
             }
 
             client = transportClient;
+            createIndicesAndMappings();
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -63,7 +74,7 @@ public class Repository {
     }
 
     public void save(Metric m) {
-        client.prepareIndex("kuona", "metric", m.getId())
+        client.prepareIndex("metricsdata", "metric", m.getId())
                 .setCreate(true)
                 .setContentType(XContentType.JSON)
                 .setSource(m.getData()).execute();
@@ -91,16 +102,59 @@ public class Repository {
     }
 
     public Object getMetric(String metric) {
-        SearchResponse response = client.prepareSearch("kuona")
+        SearchResponse response = client.prepareSearch("metricsdata")
                 .setTypes("metric")
-                .setQuery(QueryBuilders.matchQuery("name", metric))
+                .setQuery(QueryBuilders.termQuery("name", metric))
                 .setSize(1)
                 .addSort("timestamp", SortOrder.DESC)
                 .execute()
                 .actionGet();
 
-        SearchHits hits = response.getHits();
+        SearchHit[] hits = response.getHits().getHits();
+        return hits.length > 0 ? hits[0].getSource() : null;
+    }
 
-        return hits.getHits()[0].getSource();
+    public List<MetricConfig> getMetricConfigList() {
+        SearchResponse response = client.prepareSearch("kuona")
+                .setTypes("metricconfig")
+//                .setSearchType(SearchType.SCAN)
+                .setQuery(QueryBuilders.matchAllQuery())
+                .execute()
+                .actionGet();
+
+        SearchHit[] hits = response.getHits().getHits();
+
+        Gson gson = new Gson();
+        List<MetricConfig> configList = new ArrayList<>();
+        for (SearchHit hit: hits) {
+            try {
+                MetricConfig metricConfig = gson.fromJson(hit.getSourceAsString(), MetricConfig.class);
+                configList.add(metricConfig);
+            } catch (JsonSyntaxException e) {
+                System.out.println("Unable to parse metric config from elasticsearch!\n" + e.toString());
+            }
+        }
+        return configList;
+    }
+
+    protected void createIndicesAndMappings() {
+        try {
+            client.admin().indices().create(new CreateIndexRequest("metricsdata"));
+
+            client.admin().indices()
+                    .preparePutMapping("metricsdata")
+                    .setType("_default_")
+                    .setSource(jsonBuilder().prettyPrint()
+                            .startObject()
+                            .startObject("properties")
+                            .startObject("name").field("type", "string").field("index", "not_analyzed").endObject()
+                            .startObject("timestamp").field("type", "date").endObject()
+                            .endObject()
+                            .endObject())
+                    .execute();
+
+        } catch (IOException | MergeMappingException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -27,15 +27,11 @@ public class MetricConfigTest {
         final String mockConfig = "{\n" +
                 "\"metricURL\": \"http://localhost/metric/test-name\",\n" +
                 "\"rawDataURL\": \"http://localhost/raw-data/test-name\",\n" +
-                "\"snap\": {\n" +
                 "\"url\": \"http://somehost.com\",\n" +
                 "\"user\": \"someuser\",\n" +
-                "\"password\": \"somepass\"\n" +
-                "},\n" +
-                "\"metric\": {\n" +
+                "\"password\": \"somepass\",\n" +
                 "\"type\": \"GoNoGo\",\n" +
                 "\"config\": {\"testkey\": \"testvalue\"}\n" +
-                "}\n" +
                 "}";
 
         Content mockContent = mock(Content.class);
@@ -53,7 +49,6 @@ public class MetricConfigTest {
         MetricConfig testMetricConfig = new MetricConfig(kuonaAppConfig, mockExecutor);
 
         verify(mockExecutor).execute(argThat(new KuonaGetRequestMatcher(kuonaAppConfig.getKuonaURL())));
-
     }
 
     @Test

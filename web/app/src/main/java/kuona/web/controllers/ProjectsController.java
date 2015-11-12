@@ -29,7 +29,7 @@ public class ProjectsController {
 
         repository.save(p);
 
-        response.redirect("/dashboard");
+        response.redirect("/#/index/dashboard");
         return null;
     }
 
