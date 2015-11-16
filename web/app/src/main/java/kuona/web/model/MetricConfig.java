@@ -6,6 +6,7 @@ public class MetricConfig {
     String name;
     String description;
     String type;
+    int frequency;
     JsonObject config;
     BuildServer buildServer;
     String url;
@@ -74,6 +75,14 @@ public class MetricConfig {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(int frequency) {
+        this.frequency = frequency;
     }
 }
 

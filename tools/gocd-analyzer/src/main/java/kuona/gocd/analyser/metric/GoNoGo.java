@@ -3,7 +3,7 @@ package kuona.gocd.analyser.metric;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import kuona.gocd.analyser.KuonaAppConfig;
+import kuona.gocd.analyser.CollectorConfig;
 import kuona.gocd.analyser.model.Pipeline;
 import kuona.gocd.analyser.model.PipelineHistory;
 import kuona.gocd.analyser.model.Result;
@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 import static org.apache.http.client.fluent.Request.Post;
 
 public class GoNoGo implements Metric {
-    private KuonaAppConfig kuonaAppConfig;
+    private CollectorConfig collectorConfig;
     private GoNoGoConfig config;
 
 
     @Override
-    public void setKuonaAppConfig(KuonaAppConfig kuonaAppConfig) {
-        this.kuonaAppConfig = kuonaAppConfig;
+    public void setCollectorConfig(CollectorConfig collectorConfig) {
+        this.collectorConfig = collectorConfig;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class GoNoGo implements Metric {
     protected void saveRawData(String data) {
         Executor executor = Executor.newInstance();
         try {
-            executor.execute(Post(kuonaAppConfig.getRawDataURL())
+            executor.execute(Post(collectorConfig.getRawDataURL())
                     .bodyString(data, ContentType.APPLICATION_JSON));
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,7 +78,7 @@ public class GoNoGo implements Metric {
     private void saveMetricData(String data) {
         Executor executor = Executor.newInstance();
         try {
-            executor.execute(Post(kuonaAppConfig.getMetricURL())
+            executor.execute(Post(collectorConfig.getMetricURL())
                     .bodyString(data, ContentType.APPLICATION_JSON));
         } catch (IOException e) {
             e.printStackTrace();
@@ -101,7 +101,7 @@ public class GoNoGo implements Metric {
 
         JsonObject result = new JsonObject();
         result.addProperty("timestamp", new Date().getTime());
-        result.addProperty("name", kuonaAppConfig.getMetricName());
+        result.addProperty("name", collectorConfig.getMetricName());
         result.addProperty("metricType", "GoNoGo");
 
         if (red > 0) {

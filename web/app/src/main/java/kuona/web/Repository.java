@@ -139,10 +139,10 @@ public class Repository {
 
     protected void createIndicesAndMappings() {
         try {
-            client.admin().indices().create(new CreateIndexRequest("metricsdata"));
+            client.admin().indices().create(new CreateIndexRequest("kuona-metrics"));
 
             client.admin().indices()
-                    .preparePutMapping("metricsdata")
+                    .preparePutMapping("kuona-metrics")
                     .setType("_default_")
                     .setSource(jsonBuilder().prettyPrint()
                             .startObject()

@@ -15,20 +15,15 @@ import java.io.IOException;
 
 public class Collector implements Job {
 
-    MetricConfig metricConfig;
-    KuonaAppConfig kuonaAppConfig;
+    CollectorConfig collectorConfig;
 
-    public void setKuonaAppConfig(KuonaAppConfig kuonaAppConfig) {
-        this.kuonaAppConfig = kuonaAppConfig;
-    }
-
-    public void setMetricConfig(MetricConfig metricConfig) {
-        this.metricConfig = metricConfig;
+    public void setCollectorConfig(CollectorConfig collectorConfig) {
+        this.collectorConfig = collectorConfig;
     }
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        GoCdConfig goCdConfig = metricConfig.getGoCdConfig();
+        GoCdConfig goCdConfig = collectorConfig.getGoCdConfig();
         HttpHost target = goCdConfig.getHost();
         Credentials defaultcreds = new UsernamePasswordCredentials(goCdConfig.getUser(), goCdConfig.getPassword());
         AuthScope authScope = new AuthScope(target.getHostName(), target.getPort());
@@ -38,9 +33,9 @@ public class Collector implements Job {
         try {
             Object response = executor.execute(Request.Get(goCdConfig.getUrl())).handleResponse(new GoCdResponseHandler());
 
-            Metric metric = (Metric) Class.forName("kuona.gocd.analyser.metric." + metricConfig.getMetricType()).newInstance();
-            metric.setKuonaAppConfig(kuonaAppConfig);
-            metric.setMetricConfig(metricConfig.getConfig());
+            Metric metric = (Metric) Class.forName("kuona.gocd.analyser.metric." + collectorConfig.getMetricType()).newInstance();
+            metric.setCollectorConfig(collectorConfig);
+            metric.setMetricConfig(collectorConfig.getMetricConfig());
             metric.analyze((String) response);
         } catch (IOException | IllegalAccessException | InstantiationException | ClassNotFoundException ie) {
             ie.printStackTrace();
