@@ -1,5 +1,6 @@
 package kuona.web.model;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 public class MetricConfig {
@@ -12,6 +13,8 @@ public class MetricConfig {
     String url;
     String user;
     String password;
+    String metricURL;
+    String rawDataURL;
 
     public String getName() {
         return name;
@@ -83,6 +86,24 @@ public class MetricConfig {
 
     public void setFrequency(int frequency) {
         this.frequency = frequency;
+    }
+
+    public String getMetricURL() {
+        return metricURL;
+    }
+
+    public String getRawDataURL() {
+        return rawDataURL;
+    }
+
+    public void generateUrls() {
+        this.metricURL = "http://localhost:9000/metrics";
+        this.rawDataURL = "http://localhost:9000/metrics/"+this.name+"/rawdata";
+    }
+
+    public String toJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 }
 

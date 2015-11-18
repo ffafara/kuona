@@ -32,17 +32,22 @@ function ProjectEditController($scope, $http, $state) {
 
 kuona.controller('ProjectEditController', ProjectEditController);
 
-function MetricConfigController($scope, $http, $state) {
+function MetricConfigController($scope, $http, $state, MetricConfig) {
     $scope.metricTypes = ["GoNoGo", "Other-Metric"];
     $scope.buildServers = ["snap", "gocd"];
-    $scope.metricConfig = {};
+
+    $scope.metricConfig = new MetricConfig();
 
     $scope.cancelEdit = function() {
             $state.go('index.dashboard');
         }
 
     $scope.submit = function(metricConfig) {
+        metricConfig['config'] = JSON.parse(metricConfig['config']);
         console.log(metricConfig);
+        metricConfig.$save();
+//TODO:        add error handling
+        $state.go('index.dashboard');
     }
 };
 

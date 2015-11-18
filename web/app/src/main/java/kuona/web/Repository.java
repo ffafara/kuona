@@ -74,10 +74,17 @@ public class Repository {
     }
 
     public void save(Metric m) {
-        client.prepareIndex("metricsdata", "metric", m.getId())
+        client.prepareIndex("kuona-metrics", "metric", m.getId())
                 .setCreate(true)
                 .setContentType(XContentType.JSON)
                 .setSource(m.getData()).execute();
+    }
+
+    public void save(MetricConfig mc) {
+        client.prepareIndex("kuona", "metricconfig", mc.getName())
+                .setCreate(true)
+                .setSource(mc.toJson())
+                .execute();
     }
 
     public Object getMetricConfig(String metric) {
@@ -102,7 +109,7 @@ public class Repository {
     }
 
     public Object getMetric(String metric) {
-        SearchResponse response = client.prepareSearch("metricsdata")
+        SearchResponse response = client.prepareSearch("kuona-metrics")
                 .setTypes("metric")
                 .setQuery(QueryBuilders.termQuery("name", metric))
                 .setSize(1)
@@ -137,6 +144,9 @@ public class Repository {
         return configList;
     }
 
+    /**
+     *  Creates deafult mappings for ElasticSearch metric index
+     */
     protected void createIndicesAndMappings() {
         try {
             client.admin().indices().create(new CreateIndexRequest("kuona-metrics"));

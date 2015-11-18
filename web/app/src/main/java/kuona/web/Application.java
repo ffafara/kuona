@@ -45,10 +45,13 @@ public class Application {
         final MetricsController metricsController = new MetricsController(repository);
         post("/metrics", metricsController::create, gson::toJson);
         post("/metrics/:metric/rawdata", metricsController::saveRawData, gson::toJson);
-        get("/metrics/:metric/config", metricsController::getConfig, gson::toJson);
-        get("/app/metrics/configs", metricsController::getConfigList, gson::toJson);
-        get("/app/metrics/configs/:metric", metricsController::getConfig, gson::toJson);
         get("/app/metrics/:metric", metricsController::getMetric, gson::toJson);
+
+        final MetricConfigsController metricConfigsController = new MetricConfigsController(repository);
+        post("/app/metrics/configs",metricConfigsController::create, gson::toJson);
+        get("/app/metrics/configs", metricConfigsController::list, gson::toJson);
+        get("/app/metrics/configs/:metric", metricConfigsController::get, gson::toJson);
+        get("/metrics/:metric/config", metricConfigsController::get, gson::toJson);
 
         final ProjectsController projectsController = new ProjectsController(repository);
         get("/app/projects", projectsController::list, gson::toJson);

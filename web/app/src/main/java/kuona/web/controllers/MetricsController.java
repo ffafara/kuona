@@ -31,17 +31,6 @@ public class MetricsController {
         return new MetricsResponse("created");
     }
 
-    public Object getConfigList(Request request, Response response) {
-        return repository.getMetricConfigList();
-    }
-
-
-    public Object getConfig(Request request, Response response) {
-
-        String metric = request.params(":metric");
-        return repository.getMetricConfig(metric);
-    }
-
     public Object saveRawData(Request request, Response response) {
 
         String metric = request.params(":metric");
