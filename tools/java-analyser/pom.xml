@@ -5,7 +5,7 @@
     <parent>
         <artifactId>kuona-dashboard</artifactId>
         <groupId>kuona</groupId>
-        <version>0.2.0</version>
+        <version>0.2.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>kuona</groupId>
             <artifactId>client</artifactId>
-            <version>0.2.0</version>
+            <version>0.2.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
