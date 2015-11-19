@@ -19,7 +19,14 @@
     <artifactId>kuona-dashboard</artifactId>
     <name>Kuona analytics for software development teams</name>
 
-    <version>0.2.0</version>
+    <version>0.2.0-SNAPSHOT</version>
+
+    <scm>
+        <connection>scm:git:https://github.com/kuona/kuona.git</connection>
+        <developerConnection>scm:git:https://github.com/kuona/kuona.git</developerConnection>
+        <url>https://github.com/kuona/kuona</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <build>
         <pluginManagement>
@@ -61,9 +68,47 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <goals>package de.jutzig:github-release-plugin:release</goals>
+                </configuration>
+            </plugin>
         </plugins>
-
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>de.jutzig</groupId>
+                        <artifactId>github-release-plugin</artifactId>
+                        <version>1.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>github-upload</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>release</goal>
+                                </goals>
+                                <configuration>
+                                    <releaseName>v${project.version}</releaseName>
+                                    <tag>v${project.version}</tag>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 
     <dependencyManagement>
         <dependencies>
