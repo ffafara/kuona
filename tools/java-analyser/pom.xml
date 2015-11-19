@@ -12,6 +12,13 @@
 
     <artifactId>java-analyser</artifactId>
 
+    <scm>
+        <connection>scm:git:https://github.com/ffafara/kuona.git</connection>
+        <developerConnection>scm:git:https://github.com/ffafara/kuona.git</developerConnection>
+        <url>https://github.com/ffafara/kuona</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>com.github.javaparser</groupId>

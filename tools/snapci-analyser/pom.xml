@@ -11,6 +11,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>snapci-analyser</artifactId>
+
+    <scm>
+        <connection>scm:git:https://github.com/ffafara/kuona.git</connection>
+        <developerConnection>scm:git:https://github.com/ffafara/kuona.git</developerConnection>
+        <url>https://github.com/ffafara/kuona</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
