@@ -18,7 +18,7 @@
     <artifactId>kuona-dashboard</artifactId>
     <name>Kuona analytics for software development teams</name>
 
-    <version>0.2.1</version>
+    <version>0.2.2-SNAPSHOT</version>
 
     <properties>
         <release.version>${project.version}</release.version>
@@ -29,7 +29,7 @@
         <connection>scm:git:https://github.com/ffafara/kuona.git</connection>
         <developerConnection>scm:git:https://github.com/ffafara/kuona.git</developerConnection>
         <url>https://github.com/ffafara/kuona</url>
-        <tag>0.2.1-SNAPSHOT</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
