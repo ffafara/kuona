@@ -20,6 +20,11 @@
 
     <version>0.2.1-SNAPSHOT</version>
 
+    <properties>
+        <release.version>${project.version}</release.version>
+        <release.tag>${project.version}</release.tag>
+    </properties>
+
     <scm>
         <connection>scm:git:https://github.com/ffafara/kuona.git</connection>
         <developerConnection>scm:git:https://github.com/ffafara/kuona.git</developerConnection>
@@ -72,6 +77,8 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
+                    <tag>${release.tag}</tag>
+                    <releaseVersion>${release.version}</releaseVersion>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
                     <goals>package de.jutzig:github-release-plugin:release</goals>
