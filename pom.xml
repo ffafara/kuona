@@ -18,7 +18,7 @@
     <artifactId>kuona-dashboard</artifactId>
     <name>Kuona analytics for software development teams</name>
 
-    <version>0.2.5-SNAPSHOT</version>
+    <version>0.2.4-SNAPSHOT</version>
 
     <properties>
         <release.version>${project.version}</release.version>
@@ -77,8 +77,7 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
-                    <releaseVersion>${project.version}</releaseVersion>
-                    <tag>${project.version}</tag>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
                     <goals>package de.jutzig:github-release-plugin:release</goals>
